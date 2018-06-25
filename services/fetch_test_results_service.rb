@@ -36,7 +36,7 @@ require 'json'
 require_relative './fetch_service'
 
 class FetchTestResultsService < FetchService
-  NO_REPOSITORY_URL_DEFINED_ERROR='The REPOSITORY_URL ENV variable needs to defined and pointing to the Repository where to fetch records'
+  NO_REPOSITORY_URL_DEFINED_ERROR='The REPOSITORY_URL ENV variable needs to be defined and pointing to the Repository where to fetch test results'
   REPOSITORY_URL = ENV.fetch('REPOSITORY_URL', '')
   if REPOSITORY_URL == ''
     STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, NO_REPOSITORY_URL_DEFINED_ERROR]
