@@ -10,7 +10,11 @@ Please see [details on the overall 5GTANGO architecture here](https://5gtango.eu
 
 ## Installing / Getting started
 
-This component is implemented in [ruby](https://www.ruby-lang.org/en/) (we're using version **2.4.3**). To have it up and running from code, please do the following:
+This component is implemented in [ruby](https://www.ruby-lang.org/en/) (we're using version **2.4.3**). 
+
+### Installing from code
+
+To have it up and running from code, please do the following:
 
 ```shell
 $ git clone https://github.com/sonata-nfv/tng-gtk-vnv.git # Clone this repository
