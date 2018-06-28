@@ -44,6 +44,6 @@ class FetchTestResultsService < FetchService
   end
   #http://tng-rep:4012 /test-suite-results  
   #http://tng-rep:4012/test-plans
-  self.site=REPOSITORY_URL+'/test-suite-results'
+  self.site=REPOSITORY_URL+'/trr/test-suite-results'
   STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, "self.site=#{self.site}"]
 end
