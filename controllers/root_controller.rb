@@ -33,15 +33,45 @@ require 'logger'
 
 class RootController < ApplicationController
 
-  OK_ROOT_ROUTE="This is the root route of the 5GTANGO Validation and Verification Platform"
-  settings.logger.info(self.name) {"Started at #{settings.began_at}"}
+  ERROR_TEST_NOT_FOUND="No test with UUID '%s' was found"
+  @@began_at = Time.now.utc
+  settings.logger.info(self.name) {"Started at #{@@began_at}"}
+  before { content_type :json}
+
+  #OK_ROOT_ROUTE="This is the root route of the 5GTANGO Validation and Verification Platform"
   
-  get '/?' do
-    content_type :text
-    halt 200, {}, [OK_ROOT_ROUTE]
+  get '/?' do 
+    msg='RootController.get /plans (many)'
+    captures=params.delete('captures') if params.key? 'captures'
+    STDERR.puts "#{msg}: params=#{params}"
+    result = FetchTestsService.call(symbolized_hash(params))
+    STDERR.puts "#{msg}: result=#{result}"
+    halt 404, {}, {error: "No tests fiting the provided parameters ('#{params}') were found"}.to_json if result.to_s.empty? # covers nil
+    halt 200, {}, result.to_json
   end
+  
+  get '/:test_uuid/?' do 
+    msg='RootController.get /plans (single)'
+    captures=params.delete('captures') if params.key? 'captures'
+    STDERR.puts "#{msg}: params=#{params}"
+    result = FetchTestsService.call(symbolized_hash(params))
+    STDERR.puts "#{msg}: result=#{result}"
+    halt 404, {}, {error: ERROR_TEST_NOT_FOUND % params[:test_uuid]}.to_json if result.to_s.empty? # covers nil
+    halt 200, {}, result.to_json
+  end
+
+#  get '/?' do
+#    content_type :text
+#    halt 200, {}, [OK_ROOT_ROUTE]
+#  end
   
   error Sinatra::NotFound do
     halt 404, {}, {error: "Route #{request.url} not found"}.to_json
   end
+  
+  private 
+  def symbolized_hash(hash)
+    Hash[hash.map{|(k,v)| [k.to_sym,v]}]
+  end
+  
 end
