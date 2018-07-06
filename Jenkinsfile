@@ -51,7 +51,7 @@ pipeline {
             sh 'rm -rf tng-devops || true'
             sh 'git clone https://github.com/sonata-nfv/tng-devops.git'
             dir(path: 'tng-devops') {
-              sh 'echo ansible-playbook roles/vnv.yml -i environments -e "target=pre-int-vnv component=gatekeeper host_key_checking=False"'
+              sh 'ansible-playbook roles/vnv.yml -i environments -e "target=pre-int-vnv component=gatekeeper host_key_checking=False"'
             }
             
           }
