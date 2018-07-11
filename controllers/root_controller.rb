@@ -59,6 +59,13 @@ class RootController < ApplicationController
     halt 404, {}, {error: ERROR_TEST_NOT_FOUND % params[:test_uuid]}.to_json if result.to_s.empty? # covers nil
     halt 200, {}, result.to_json
   end
+  
+  options '/?' do
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET'      
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With'
+    halt 200
+  end
 
 #  get '/?' do
 #    content_type :text
