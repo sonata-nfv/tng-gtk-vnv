@@ -25,9 +25,7 @@
         "consumes": ["*/*"],
         "produces": ["text/html; charset=utf-8"],
         "parameters": [],
-        "responses": {
-          "200": { "description": "OK"}
-        }
+        "responses": { "200": { "description": "OK"}}
       }
     },
     "/pings": {
@@ -38,159 +36,263 @@
         "consumes": ["*/*"],
         "produces": ["application/json"],
         "parameters": [],
-        "responses": {
-          "200": { "description": "OK"}
-        }
+        "responses": { "200": { "description": "OK"}}
       }
     },
     "/tests/descriptors": {
-      "post": {
+      "get": {
         "tags": ["tests management"],
-        "summary": "Requests existing test descriptors",
-        "consumes": ["application/json"],
+        "summary": "Query test descriptors",
+        "operationId": "testDescriptorsQuerying",
+        "consumes": ["*/*"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "in": "body",
-            "name": "uuid",
-            "description": "The UUID of the entity to which the request is related to (Service or Slice)",
-            "schema": {"$ref": "#/definitions/RequestData" }
+            "name": "page_size",
+            "in": "query",
+            "description": "The number of test descriptors to be included in a page",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          {
+            "name": "page_number",
+            "in": "query",
+            "description": "The number of the page of test descriptors to be shown (starting in 0)",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "default": 0
           }
         ],
         "responses": {
-           "201": { "description": "OK"},
-          "400": {"description": "Bad Request"}
+            "200": { "description": "OK", "schema": { "type": "array", "items": { "$ref": "#/definitions/TestDescriptorMetadataReturn"}}},
+            "400": {"description": "Bad Request"}
         }
       },
+      "options": {
+        "tags": ["tests management"],
+        "summary": "Options for test descriptors",
+        "operationId": "testDescriptorsOptions",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+            "200": { "description": "OK"},
+            "400": { "description": "Bad Request"}
+        }
+      }
+    },
+    "/tests/descriptors/{test_descriptor_uuid}": {
       "get": {
-        "tags": ["requests management"],
-        "summary": "Queries requests",
-        "consumes": ["application/json"],
+        "tags": ["tests management"],
+        "summary": "Query a specific test descriptor meta-data",
+        "parameters": [
+          {
+            "name": "test_descriptor_uuid",
+            "in": "path",
+            "description": "The UUID of the test descriptor which meta-data is required",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "OK", "schema":{ "$ref":"#/definitions/TestDescriptorMetadataReturn"}},
+          "400": { "description": "Bad request"},
+          "404": { "description": "Not found"}
+        }
+      }
+    },
+    "/tests/plans": {
+      "get": {
+        "tags": ["tests management"],
+        "summary": "Query test plans",
+        "operationId": "testPlansQuerying",
+        "consumes": ["*/*"],
         "produces": ["application/json"],
         "parameters": [
           {
-            "in": "body",
-            "name": "uuid",
-            "description": "The UUID of the entity to which the request is related to (Service or Slice)",
-            "schema": {"$ref": "#/definitions/RequestResponseData" }
+            "name": "page_size",
+            "in": "query",
+            "description": "The number of test plans to be included in a page",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          {
+            "name": "page_number",
+            "in": "query",
+            "description": "The number of the page of test plans to be shown (starting in 0)",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "default": 0
           }
         ],
         "responses": {
-          "200": { "description": "OK"},
-          "400": {"description": "Bad Request"},
-          "404": {"description": "Not found"}
+            "200": { "description": "OK", "schema": { "type": "array", "items": { "$ref": "#/definitions/TestDescriptorMetadataReturn"}}},
+            "400": {"description": "Bad Request"}
+        }
+      },
+      "options": {
+        "tags": ["tests management"],
+        "summary": "Options for test plans",
+        "operationId": "testPlansOptions",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+            "200": { "description": "OK"},
+            "400": { "description": "Bad Request"}
+        }
+      }
+    },
+    "/tests/plans/{test_plan_uuid}": {
+      "get": {
+        "tags": ["tests management"],
+        "summary": "Query a specific test plan meta-data",
+        "parameters": [
+          {
+            "name": "test_plan_uuid",
+            "in": "path",
+            "description": "The UUID of the test plan which meta-data is required",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "OK", "schema":{ "$ref":"#/definitions/TestDescriptorMetadataReturn"}},
+          "400": { "description": "Bad request"},
+          "404": { "description": "Not found"}
+        }
+      }
+    },
+    "/tests/results": {
+      "get": {
+        "tags": ["tests management"],
+        "summary": "Query test results",
+        "operationId": "testResultsQuerying",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "page_size",
+            "in": "query",
+            "description": "The number of test results to be included in a page",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          },
+          {
+            "name": "page_number",
+            "in": "query",
+            "description": "The number of the page of test results to be shown (starting in 0)",
+            "required": false,
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "default": 0
+          }
+        ],
+        "responses": {
+            "200": { "description": "OK", "schema": { "type": "array", "items": { "$ref": "#/definitions/TestDescriptorMetadataReturn"}}},
+            "400": {"description": "Bad Request"}
+        }
+      },
+      "options": {
+        "tags": ["tests management"],
+        "summary": "Options for test results",
+        "operationId": "testResultsOptions",
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+            "200": { "description": "OK"},
+            "400": { "description": "Bad Request"}
+        }
+      }
+    },
+    "/tests/results/{test_result_uuid}": {
+      "get": {
+        "tags": ["tests management"],
+        "summary": "Query a specific test result meta-data",
+        "parameters": [
+          {
+            "name": "test_result_uuid",
+            "in": "path",
+            "description": "The UUID of the test result which meta-data is required",
+            "required": true,
+            "type": "string",
+            "format": "uuid"
+          }
+        ],
+        "consumes": ["*/*"],
+        "produces": ["application/json"],
+        "responses": {
+          "200": { "description": "OK", "schema":{ "$ref":"#/definitions/TestDescriptorMetadataReturn"}},
+          "400": { "description": "Bad request"},
+          "404": { "description": "Not found"}
         }
       }
     }
   },
   "definitions": {
-    "RequestData": {
-      "type": "object",
+    "TestCategories": { "type": "object", "properties": {"category_type": { "type": "string", "description": "The category of the test"}}},
+    "TestConfigurationParameters": { 
+      "type": "object", 
       "properties": {
-        "uuid": {
-          "type": "string",
-          "description": "The UUID of the entity to which the request is related to (Service or Slice) -- mandatory for CREATION"
-        },
-        "instance_uuid": {
-          "type": "string",
-          "description": "The UUID of the instance of the entity to which the request is related to (Service or Slice) -- mandatory for UPDATE and TERMINATION"
-        },
-        "egresses": {
-          "type": "array",
-          "description": "List of egress points to be taken into consideration during the instantiation",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ingresses": {
-          "type": "array",
-          "description": "List of ingress points to be taken into consideration during the instantiation",
-          "items": {
-            "type": "string"
-          }
-        },
-        "blacklist": {
-          "type": "array",
-          "description": "List of sites where not to instantiate",
-          "items": {
-            "type": "string"
-          }
-        },
-        "callback": {
-          "type": "string",
-          "description": "The callback to call when the instantiation is ready"
-        }
+        "content_type": { "type": "string", "description": "The content type of the parameter"},
+        "parameter_definition": { "type": "string", "description": "A description of the parameter"},
+        "parameter_name": { "type": "string", "description": "The name of the parameter"},
+        "parameter_value": { "type": "string", "description": "The value of the parameter"}
       }
     },
-    "RequestResponseData":{
+    "TestExecutionParameters": { 
+      "type": "object", 
+      "properties": {
+        "tag_id": { "type": "string", "description": "The id of the tag"},
+        "test_tag": { "type": "string", "description": "The text of the tag"}
+      }
+    },
+    "TestDescriptorData":{
       "type": "object",
       "properties": {
-        "uuid": {
-          "type": "string",
-          "description": "The UUID of the entity to which the request is related to (Service or Slice) -- mandatory for CREATION"
-        },
-        "instance_uuid": {
-          "type": "string",
-          "description": "The UUID of the instance of the entity to which the request is related to (Service or Slice) -- mandatory for UPDATE and TERMINATION"
-        },
-        "egresses": {
-          "type": "array",
-          "description": "List of egress points to be taken into consideration during the instantiation",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ingresses": {
-          "type": "array",
-          "description": "List of ingress points to be taken into consideration during the instantiation",
-          "items": {
-            "type": "string"
-          }
-        },
-        "blacklist": {
-          "type": "array",
-          "description": "List of sites where not to instantiate",
-          "items": {
-            "type": "string"
-          }
-        },
-        "callback": {
-          "type": "string",
-          "description": "The callback to call when the instantiation is ready"
-        },
-        "created_at": {
-          "type": "string",
-          "description": "The time at which the instantiation request has been created"
-        },
-        "updated_at": {
-          "type": "string",
-          "description": "The time at which the instantiation request has been updated"
-        },
-        "customer_uuid": {
-          "type": "string",
-          "description": "The UUID of the Customer requesting the change to the service"
-        }, 
-        "id": {
-          "type": "string",
-          "description": "The ID of the request"
-        }, 
-        "request_type": {
-          "type": "string",
-          "description": "The type of the request. Defaults to CREATE_SERVICE, but can also be TERMINATE_SERVICE and UPDATE_SERVICE"
-        }, 
-        "sla_id": {
-          "type": "string",
-          "description": "The UUID of the SLA chosen by the customer"
-        }, 
-        "policy_id": {
-          "type": "string",
-          "description": "The UUID of the policy related to the above SLA UUID"
-        },
-        "status": {
-          "type": "string",
-          "description": "The status of the instantiation request: starts NEW, becomes INSTANTIATING while the MANO does the work, and finishes either READY (success) or ERROR (fail)"
-        }
+        "author": { "type": "string", "description": "The author of the Test Descriptor"}, 
+        "description": { "type": "string", "description": "A description of the Test Descriptor"}, 
+        "descriptor_schema": { "type": "string", "description": "The URL of the test descriptor schema"}, 
+        "name": { "type": "string", "description": "The name of the Test Descriptor"}, 
+        "test_category": { "type": "array", "items": {"$ref": "#/definitions/TestCategories"}}, 
+        "test_configuration_parameters": { "type": "array", "items": {"$ref": "#/definitions/TestConfigurationParameters"}}, 
+        "test_execution": { "type": "array", "items": {"$ref": "#/definitions/TestExecutionParameters"}}, 
+        "test_type": { "type": "string", "description": "The type of the test: bash, ttcn3 or python"}, 
+        "vendor": { "type": "string", "description": "The vendor of the Test Descriptor"},
+        "version": { "type": "string", "description": "The version of the Test Descriptor"}
+      }
+    },
+    "TestDescriptorMetadataReturn":{
+      "type": "object",
+      "properties": {
+        "uuid": { "type": "string", "description": "The UUID of the test descriptor which we need"},
+        "created_at": { "type": "string", "description": "The date and time on which the test descriptor was created"},
+        "updated_at": { "type": "string", "description": "The date and time on which the test descriptor was updated"},
+        "md5": { "type": "string", "description": "The MD5 of the test descriptor"}, 
+        "signature": { "type": "string", "description": "The signature of the test descriptor"}, 
+        "status": { "type": "string", "description": "The status of the test descriptor"}, 
+        "username": { "type": "string", "description": "The username of the user that has created the test descriptor"}, 
+        "testd": { "type": "array", "items": {"$ref": "#/definitions/TestDescriptorData"}}
+      }
     }
   }
-  }
 }
+
