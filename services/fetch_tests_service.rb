@@ -35,7 +35,7 @@ require 'ostruct'
 require 'json'
 require_relative './fetch_service'
 
-class FetchTestsService < FetchService
+class FetchTestDescriptorsService < FetchService
   
   NO_CATALOGUE_URL_DEFINED_ERROR='The CATALOGUE_URL ENV variable needs to defined and pointing to the Catalogue where to fetch tests'
   CATALOGUE_URL = ENV.fetch('CATALOGUE_URL', '')
