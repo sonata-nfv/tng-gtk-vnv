@@ -30,13 +30,13 @@ Everything being fine, you'll have a server running on that session, on port `50
 $ curl <host name>:5000/
 ```
 
-### Installing from container
+### Installing from the Docker container
 
 ## Developing
-
+This section covers all the needs a developer has in order to be able to contribute to this project.
 
 ### Built With
-We are using the following libraries (also referenced in the [`Gemfile`](https://github.com/sonata-nfv/tng-gtk-vnv/Gemfile) for development:
+We are using the following libraries (also referenced in the [`Gemfile`](https://github.com/sonata-nfv/tng-gtk-vnv/Gemfile) file) for development:
 
 * `puma` (`3.11.0`), an application server;
 * `rack` (`2.0.4`), a web-server interfacing library, on top of which `sinatra` has been built;
@@ -54,26 +54,32 @@ The following *gems* (libraries) are used just for tests:
 * `rubocop-checkstyle_formatter` (`0.4.0`), a helper library for `rubocop`;
 * `webmock` (`3.1.1`), which alows *mocking* (i.e., faking) HTTP calls;
 
-### Prerequisites
-What is needed to set up the dev environment. For instance, global dependencies or any other tools. include download links.
-
-
-### Setting up Dev
-
-Here's a brief intro about what a developer must do in order to start developing
-the project further:
+These libraries are installed/updated in the developer's machine when running the command (see above):
 
 ```shell
-git clone https://github.com/your/your-project.git
-cd your-project/
-packagemanager install
+$ bundle install
 ```
 
-And state what happens step-by-step. If there is any virtual environment, local server or database feeder needed, explain here.
+### Prerequisites
+We usually use [`rbenv`](https://github.com/rbenv/rbenv) as the ruby version manager, but others like [`rvm`](https://rvm.io/) may work as well.
+
+### Setting up Dev
+Developing this micro-service is easy.
+
+Routes within the micro-service are defined in the [`config.ru`](https://github.com/sonata-nfv/tng-gtk-vnv/blob/master/config.ru) file, in the root directory. It has two sections:
+
+* The `require` section, where all used libraries must be required (**Note:** `controllers` had to be required explicitly, while `services` do not, due to a bug we have found to happened in some of the environments);
+* The `map` section, where this micro-service's routes are mapped to the controller responsible for it.
+
+This new or updated route can then be mapped either into an existing conctroller or imply writing a new controller. This new or updated controller can use either existing or newly written services to fullfil it's role.
+
+For further details on the micro-service's architecture please check the [documentation](https://github.com/sonata-nfv/tng-gtk-vnv/wiki/micro-service-architecture).
+
+Changes to the repository can be requested using [this repository's issues](/issues) and [pull requests](/pulls) mechanisms.
 
 ### Building
 
-So special steps are needed for building this component.
+No special steps are needed for building this component.
 
 ### Deploying / Publishing
 give instructions on how to build and release a new version
@@ -88,38 +94,28 @@ And again you'd need to tell what the previous code actually does.
 
 ## Versioning
 
-We can maybe use [SemVer](http://semver.org/) for versioning. For the versions available, see the [link to tags on this repository](/tags).
-
+The most up-to-date version is v4. For the versions available, see the [link to tags on this repository](/tags).
 
 ## Configuration
+The configuration of the micro-service is done through just two environment variables, defined in the [Dockerfile](https://github.com/sonata-nfv/tng-gtk-vnv/blob/master/Dockerfile):
 
-Here you should write what are all of the configurations a user can enter when
-using the project.
+* `CATALOGUE_URL`, which should define the Catalogue's URL, where test descriptors are fetched from;
+* `REPOSITORY_URL`, which should define the Repository's URL, where test plans and test results are fetched from;
 
 ## Tests
+Unit tests are defined for both `controllers` and `services`, in the `/spec` folder. Since we use `rspec` as the test library, we configure tests in the [`spec_helper.rb`](https://github.com/sonata-nfv/tng-gtk-vnv/blob/master/spec/spec_helper.rb) file, also in the `/spec` folder.
 
-Describe and show how to run the tests with code examples.
-Explain what these tests test and why.
-
-```shell
-Give an example
-```
+Wider scope (integration and functional) tests involving this micro-service are defined in [`tng-tests`](https://github.com/sonata-nfv/tng-tests).
 
 ## Style guide
+Our style guide is really simple:
 
-Explain your code style and show how to check it.
+1. We try to follow a [Clean Code](https://www.amazon.com/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882) philosophy in as much as possible, i.e., classes and methods should do one thing only, have the least number of parameters possible, etc.;
+1. we use two spaces for identation.
 
 ## Api Reference
 
-If the api is external, link to api documentation. If not describe your api including authentication methods as well as explaining all the endpoints with their required parameters.
-
-### Requests
-
-#### Creating requests
-
-```shell
-$ http POST pre-int-sp-ath.5gtango.eu:32002/api/v3/requests uuid=2ec2b09b-9d2c-4cfd-86c5-664f8ff7c4ca egresses=[] ingresses=[] blacklist=[]
-```
+We have specified this micro-service's API in a [swagger](https://github.com/sonata-nfv/tng-gtk-vnv/blob/master/doc/swagger.json)-formated file. Please check it there.
 
 ## Licensing
 
