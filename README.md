@@ -121,11 +121,6 @@ If the api is external, link to api documentation. If not describe your api incl
 $ http POST pre-int-sp-ath.5gtango.eu:32002/api/v3/requests uuid=2ec2b09b-9d2c-4cfd-86c5-664f8ff7c4ca egresses=[] ingresses=[] blacklist=[]
 ```
 
-## Database
-
-Explaining what database (and version) has been used. Provide download links.
-Documents your database design and schemas, relations etc... 
-
 ## Licensing
 
-This 5GTANGO component is published under Apache 2.0 license. Please see the [LICENSE]() file for more details.
+This 5GTANGO component is published under Apache 2.0 license. Please see the [LICENSE](https://github.com/sonata-nfv/tng-gtk-vnv/blob/master/LICENSE) file for more details.
