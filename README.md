@@ -27,17 +27,32 @@ $ PORT=5000 bundle exec rackup # Run the server
 Everything being fine, you'll have a server running on that session, on port `5000`. You can use it by using `curl`, like in:
 
 ```shell
-$ curl <host name>:5350/
+$ curl <host name>:5000/
 ```
 
-## Developing
-Development in this component is done by using [ruby](https://www.ruby-lang.org/en/), version 2.4.3, and the following libraries (also referenced in the `Gemfile`):
+### Installing from container
 
-----
-Still a Work-in-Progress from here down
+## Developing
+
 
 ### Built With
-List main libraries, frameworks used including versions (React, Angular etc...)
+We are using the following libraries (also referenced in the [`Gemfile`](https://github.com/sonata-nfv/tng-gtk-vnv/Gemfile) for development:
+
+* `puma` (`3.11.0`), an application server;
+* `rack` (`2.0.4`), a web-server interfacing library, on top of which `sinatra` has been built;
+* `rake`(`12.3.0`), a dependencies management tool for ruby, similar to *make*;
+* `sinatra` (`2.0.2`), a web framework for implementing efficient ruby APIs;
+* `sinatra-contrib` (`2.0.2`), several add-ons to `sinatra`;
+* `sinatra-cross_origin` (`0.4.0`), a *middleware* to `sinatra` that helps in managing the [`Cross Origin Resource Sharing (CORS)`](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) problem;
+
+
+The following *gems* (libraries) are used just for tests:
+* `ci_reporter_rspec` (`1.0.0`), a library for helping in generating continuous integration (CI) test reports;
+* `rack-test` (`0.8.2`), a helper testing framework for `rack`-based applications;
+* `rspec` (`3.7.0`), a testing framework for ruby;
+* `rubocop` (`0.52.0`), a library for white box tests; 
+* `rubocop-checkstyle_formatter` (`0.4.0`), a helper library for `rubocop`;
+* `webmock` (`3.1.1`), which alows *mocking* (i.e., faking) HTTP calls;
 
 ### Prerequisites
 What is needed to set up the dev environment. For instance, global dependencies or any other tools. include download links.
@@ -58,17 +73,7 @@ And state what happens step-by-step. If there is any virtual environment, local 
 
 ### Building
 
-If your project needs some additional steps for the developer to build the
-project after some code changes, state them here. for example:
-
-```shell
-./configure
-make
-make install
-```
-
-Here again you should state what actually happens when the code above gets
-executed.
+So special steps are needed for building this component.
 
 ### Deploying / Publishing
 give instructions on how to build and release a new version
