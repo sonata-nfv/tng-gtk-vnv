@@ -128,4 +128,4 @@ Documents your database design and schemas, relations etc...
 
 ## Licensing
 
-State what the license is and how to find the text version of the license.
+This 5GTANGO component is published under Apache 2.0 license. Please see the [LICENSE]() file for more details.
