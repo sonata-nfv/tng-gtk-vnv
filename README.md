@@ -75,7 +75,7 @@ This new or updated route can then be mapped either into an existing conctroller
 
 For further details on the micro-service's architecture please check the [documentation](https://github.com/sonata-nfv/tng-gtk-vnv/wiki/micro-service-architecture).
 
-Changes to the repository can be requested using [this repository's issues](/issues) and [pull requests](/pulls) mechanisms.
+Changes to the repository can be requested using [this repository's issues](https://github.com/sonata-nfv/tng-gtk-vnv/issues) and [pull requests](https://github.com/sonata-nfv/tng-gtk-vnv/pulls) mechanisms.
 
 ### Building
 
@@ -94,7 +94,7 @@ And again you'd need to tell what the previous code actually does.
 
 ## Versioning
 
-The most up-to-date version is v4. For the versions available, see the [link to tags on this repository](/tags).
+The most up-to-date version is v4. For the versions available, see the [link to tags on this repository](https://github.com/sonata-nfv/tng-gtk-vnv/tags).
 
 ## Configuration
 The configuration of the micro-service is done through just two environment variables, defined in the [Dockerfile](https://github.com/sonata-nfv/tng-gtk-vnv/blob/master/Dockerfile):
