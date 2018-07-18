@@ -21,7 +21,7 @@ $ git clone https://github.com/sonata-nfv/tng-gtk-vnv.git # Clone this repositor
 $ cd tng-gtk-vnv # Go to the newly created folder
 $ bundle install # Install dependencies
 $ bundle exec rspec spec # Execute tests
-$ PORT=5000 bundle exec rackup # Run the server
+$ PORT=5000 bundle exec rackup # dev server at http://localhost:5000
 ```
 
 Everything being fine, you'll have a server running on that session, on port `5000`. You can use it by using `curl`, like in:
