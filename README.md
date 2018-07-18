@@ -39,7 +39,7 @@ $ docker run -d -p 27017:27017 --net=tango --name mongo mongo
 $ docker run -d -p 4011:4011 --net=tango --name tng-cat sonatanfv/tng-cat:dev
 $ docker run -d -p 4012:4012 --net=tango --name tng-rep sonatanfv/tng-rep:dev
 $ docker run -d -p 5000:5000 --net=tango --name tng-gtk-vnv \
-  -e CATALOGUE_URL=http://tng-cat:4011 \
+  -e CATALOGUE_URL=http://tng-cat:4011/catalogues/api/v2 \
   -e REPOSITORY_URL=http://tng-cat:4012 \
   sonatanfv/tng-gtk-vnv:dev
 ```
