@@ -20,7 +20,6 @@ To have it up and running from code, please do the following:
 $ git clone https://github.com/sonata-nfv/tng-gtk-vnv.git # Clone this repository
 $ cd tng-gtk-vnv # Go to the newly created folder
 $ bundle install # Install dependencies
-$ bundle exec rspec spec # Execute tests
 $ PORT=5000 bundle exec rackup # dev server at http://localhost:5000
 ```
 
@@ -63,7 +62,6 @@ We are using the following libraries (also referenced in the [`Gemfile`](https:/
 * `sinatra` (`2.0.2`), a web framework for implementing efficient ruby APIs;
 * `sinatra-contrib` (`2.0.2`), several add-ons to `sinatra`;
 * `sinatra-cross_origin` (`0.4.0`), a *middleware* to `sinatra` that helps in managing the [`Cross Origin Resource Sharing (CORS)`](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) problem;
-
 
 The following *gems* (libraries) are used just for tests:
 * `ci_reporter_rspec` (`1.0.0`), a library for helping in generating continuous integration (CI) test reports;
@@ -110,6 +108,10 @@ The configuration of the micro-service is done through just two environment vari
 ## Tests
 Unit tests are defined for both `controllers` and `services`, in the `/spec` folder. Since we use `rspec` as the test library, we configure tests in the [`spec_helper.rb`](https://github.com/sonata-nfv/tng-gtk-vnv/blob/master/spec/spec_helper.rb) file, also in the `/spec` folder.
 
+To run these tests you need to execute the follwoing command:
+```shell
+$ CATALOGUE_URL=... REPOSITORY_URL=... bundle exec rspec spec
+```
 Wider scope (integration and functional) tests involving this micro-service are defined in [`tng-tests`](https://github.com/sonata-nfv/tng-tests).
 
 ## Style guide
