@@ -3,7 +3,7 @@
 
 <p align="center"><img src="https://github.com/sonata-nfv/tng-api-gtw/wiki/images/sonata-5gtango-logo-500px.png" /></p>
 
-# Gatekeeper Verification and Validation platform-specific component
+# Gatekeeper Verification & Validation platform-specific component
 This is the 5GTANGO Gatekeeper Verification and Validation platform specific components repository, which closely follows its [SP Platform counterpart](https://github.com/sonata-nfv/tng-gtk-sp), complementing the [common component repository](https://github.com/sonata-nfv/tng-gtk-common) .
 
 Please see [details on the overall 5GTANGO architecture here](https://5gtango.eu/project-outcomes/deliverables/2-uncategorised/31-d2-2-architecture-design.html). 
