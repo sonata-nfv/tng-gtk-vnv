@@ -31,6 +31,23 @@ $ curl <host name>:5000/
 ```
 
 ### Installing from the Docker container
+In case you prefer a `docker` based development, you can run the following commands (`bash` shell):
+
+```shell
+$ docker network create tango
+$ docker run -d -p 4011:4011 --net=tango --name tng-cat sonatanfv/tng-cat:dev
+$ docker run -d -p 4012:4012 --net=tango --name tng-rep sonatanfv/tng-rep:dev
+$ docker run -d -p 5000:5000 --net=tango --name tng-gtk-vnv \
+  -e CATALOGUE_URL=http://tng-cat:4011 \
+  -e REPOSITORY_URL=http://tng-cat:4012 \
+  sonatanfv/tng-gtk-vnv:dev
+```
+With these commands, you:
+
+1. Create a `docker` network named `tango`;
+1. Run the [Catalogue](https://github.com/sonata-nfv/tng-cat) container within the `tango` network;
+1. Run the [Repository](https://github.com/sonata-nfv/tng-rep) container within the `tango` network;
+1. Run the [V&V-specific Gatekeeper](https://github.com/sonata-nfv/tng-gtk-vnv) container within the `tango` network, with the `CATALOGUE_URL` and `REPOSITORY_URL` environment variables set to the previously created containers.
 
 ## Developing
 This section covers all the needs a developer has in order to be able to contribute to this project.
