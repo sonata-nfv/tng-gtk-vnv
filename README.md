@@ -99,7 +99,7 @@ Changes to the repository can be requested using [this repository's issues](http
 
 ## Versioning
 
-The most up-to-date version is v4. For the versions available, see the [link to tags on this repository](https://github.com/sonata-nfv/tng-gtk-vnv/tags).
+The most up-to-date version is v4. For the versions available, see the [link to tags on this repository](https://github.com/sonata-nfv/tng-gtk-vnv/releases).
 
 ## Configuration
 The configuration of the micro-service is done through just two environment variables, defined in the [Dockerfile](https://github.com/sonata-nfv/tng-gtk-vnv/blob/master/Dockerfile):
