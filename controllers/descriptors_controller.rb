@@ -52,7 +52,7 @@ class DescriptorsController < ApplicationController
     msg='DescriptorsController.get /descriptors (single)'
     captures=params.delete('captures') if params.key? 'captures'
     STDERR.puts "#{msg}: params=#{params}"
-    result = FetchTestDescriptorsService.call(symbolized_hash(params))
+    result = FetchTestDescriptorsService.call(uuid: params['test_uuid'])
     STDERR.puts "#{msg}: result=#{result}"
     halt 404, {}, {error: ERROR_TEST_NOT_FOUND % params[:test_uuid]}.to_json if result.to_s.empty? # covers nil
     halt 200, {}, result.to_json
