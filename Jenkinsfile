@@ -10,7 +10,7 @@ pipeline {
         }
         stage('tng-gtk-vnv') {
           steps {
-            sh 'docker build -t registry.sonata-nfv.eu:5000/tng-gtk-vnv .'
+            sh 'docker build -t registry.sonata-nfv.eu:5000/tng-gtk-vnv:v4.0 .'
           }
         }
       }
@@ -34,7 +34,7 @@ pipeline {
         }
         stage('tng-gtk-vnv') {
           steps {
-            sh 'docker push registry.sonata-nfv.eu:5000/tng-gtk-vnv'
+            sh 'docker push registry.sonata-nfv.eu:5000/tng-gtk-vnv:v4.0'
           }
         }
       }
@@ -51,7 +51,7 @@ pipeline {
             sh 'rm -rf tng-devops || true'
             sh 'git clone https://github.com/sonata-nfv/tng-devops.git'
             dir(path: 'tng-devops') {
-              sh 'ansible-playbook roles/vnv.yml -i environments -e "target=pre-int-vnv component=gatekeeper host_key_checking=False"'
+              sh 'ansible-playbook roles/vnv.yml -i environments -e "target=sta-vnv-v4.0 component=gatekeeper host_key_checking=False"'
             }
             
           }
@@ -75,12 +75,12 @@ pipeline {
         }
         stage('tng-gtk-vnv') {
           steps {
-            sh 'docker tag registry.sonata-nfv.eu:5000/tng-gtk-vnv:latest registry.sonata-nfv.eu:5000/tng-gtk-vnv:int'
-            sh 'docker push  registry.sonata-nfv.eu:5000/tng-gtk-vnv:int'
+            sh 'docker tag registry.sonata-nfv.eu:5000/tng-gtk-vnv:v4.0 registry.sonata-nfv.eu:5000/tng-gtk-vnv:v4.0'
+            sh 'docker push  registry.sonata-nfv.eu:5000/tng-gtk-vnv:v4.0'
 //            sh 'rm -rf tng-devops || true'
 //            sh 'git clone https://github.com/sonata-nfv/tng-devops.git'
 //            dir(path: 'tng-devops') {
-//              sh 'ansible-playbook roles/sp.yml -i environments -e "target=int-vnv component=gatekeeper"'
+//              sh 'ansible-playbook roles/sp.yml -i environments -e "target=sta-vnv-v4.0 component=gatekeeper"'
 //            }
           }
         }
