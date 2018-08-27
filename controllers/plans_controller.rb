@@ -72,7 +72,7 @@ class PlansController < ApplicationController
     halt 200
   end
   
-  post '/:test_uuid/executions/?' do
+  post '/?' do
     msg='PlansController.post /plans'
 
     body = request.body.read
