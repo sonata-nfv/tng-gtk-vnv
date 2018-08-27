@@ -80,7 +80,7 @@ class PlansController < ApplicationController
     
     begin
       params = JSON.parse(body, quirks_mode: true, symbolize_names: true)
-      halt_with_code_body(400, ERROR_EMPTY_BODY.to_json) unless valid_params?(params)
+      halt_with_code_body(400, ERROR_EMPTY_BODY.to_json) unless valid_parameters?(params)
       saved_request = CreateTestPlansService.call(params)
       STDERR.puts "#{msg}: saved_request='#{saved_request.inspect}'"
       halt_with_code_body(400, {error: "Error creating the test plan"}.to_json) if saved_request.nil? 
