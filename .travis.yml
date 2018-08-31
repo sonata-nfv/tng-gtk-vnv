@@ -37,5 +37,6 @@ cache: bundler
 env:
   global:
     - REPOSITORY_URL=http://tng-rep:4012
+    - VNV_LCM_URL=http://tng-vnv-lcm:6100/api/v1
 script: 
   - bundle exec rspec spec
