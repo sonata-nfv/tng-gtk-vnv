@@ -35,6 +35,11 @@ require 'securerandom'
 class PlansController < ApplicationController
 
   ERROR_PLAN_NOT_FOUND="No plan with UUID '%s' was found"
+  ERROR_EMPTY_BODY = <<-eos 
+  The request was missing a body with (either):
+     \tservice_uuid: the UUID of the service to be tested
+     \ttest_uuid: the UUID of the test to be executed
+  eos
 
   @@began_at = Time.now.utc
   settings.logger.info(self.name) {"Started at #{@@began_at}"}
@@ -66,6 +71,25 @@ class PlansController < ApplicationController
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With'
     halt 200
   end
+  
+  post '/?' do
+    msg='PlansController.post /plans'
+
+    body = request.body.read
+    halt_with_code_body(400, ERROR_EMPTY_BODY.to_json) if body.empty?
+    
+    begin
+      params = JSON.parse(body, quirks_mode: true, symbolize_names: true)
+      halt_with_code_body(400, ERROR_EMPTY_BODY.to_json) unless valid_parameters?(params)
+      saved_request = CreateTestPlansService.call(params)
+      STDERR.puts "#{msg}: saved_request='#{saved_request.inspect}'"
+      halt_with_code_body(400, {error: "Error creating the test plan"}.to_json) if saved_request.nil? 
+      halt_with_code_body(404, {error: saved_request[:error]}.to_json) if (saved_request && saved_request.is_a?(Hash) && saved_request.key?(:error))
+      halt_with_code_body(201, saved_request.to_json)
+    rescue JSON::ParserError => e
+      halt_with_code_body(400, {error: "Error parsing params #{params}"}.to_json)
+    end
+  end
     
   private
   def uuid_valid?(uuid)
@@ -75,5 +99,13 @@ class PlansController < ApplicationController
   
   def symbolized_hash(hash)
     Hash[hash.map{|(k,v)| [k.to_sym,v]}]
+  end
+  
+  def halt_with_code_body(code, body)
+    halt code, {'Content-Type'=>'application/json', 'Content-Length'=>body.length.to_s}, body
+  end
+  
+  def valid_parameters?(params)
+    params.key?(:service_uuid) || params.key?(:test_uuid)
   end
 end

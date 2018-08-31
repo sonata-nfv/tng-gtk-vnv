@@ -35,12 +35,12 @@ ruby '2.4.3'
 
 gem 'rake', '12.3.0'
 gem 'rack', '2.0.4'
-gem 'rack-uploads', '0.2.1'
+#gem 'rack-uploads', '0.2.1'
 gem 'sinatra', '2.0.2', require: 'sinatra/base'
 gem 'sinatra-contrib', '2.0.2', require: false
 gem 'sinatra-cross_origin', '0.4.0'
-gem 'faraday', '0.14.0'
-gem 'curb', '0.9.3'
+#gem 'faraday', '0.14.0'
+#gem 'curb', '0.9.3'
 #gem 'rest_client'
 
 
@@ -49,13 +49,13 @@ gem 'puma', '3.11.0'
 gem 'ci_reporter_rspec', '1.0.0'
 gem 'rubocop', '0.52.0'
 gem 'rubocop-checkstyle_formatter', '0.4.0', require: false
-gem 'activesupport', '5.1.4', require: "active_support"
+#gem 'activesupport', '5.1.4', require: "active_support"
 
 group :test do
-  gem 'factory_bot', '4.8.2'
+#  gem 'factory_bot', '4.8.2'
   gem 'webmock', '3.1.1'
   gem 'rspec', '3.7.0'
   gem 'rack-test', '0.8.2'
-  gem 'rspec-its', '1.2.0'
-  gem 'bunny-mock', '1.7.0'
+#  gem 'rspec-its', '1.2.0'
+#  gem 'bunny-mock', '1.7.0'
 end

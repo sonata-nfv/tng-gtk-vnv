@@ -137,7 +137,7 @@
           }
         ],
         "responses": {
-            "200": { "description": "OK", "schema": { "type": "array", "items": { "$ref": "#/definitions/TestDescriptorMetadataReturn"}}},
+            "200": { "description": "OK", "schema": { "type": "array", "items": { "$ref": "#/definitions/TestPlanMetadataReturn"}}},
             "400": {"description": "Bad Request"}
         }
       },
@@ -171,7 +171,7 @@
         "consumes": ["*/*"],
         "produces": ["application/json"],
         "responses": {
-          "200": { "description": "OK", "schema":{ "$ref":"#/definitions/TestDescriptorMetadataReturn"}},
+          "200": { "description": "OK", "schema":{ "$ref":"#/definitions/TestPlanMetadataReturn"}},
           "400": { "description": "Bad request"},
           "404": { "description": "Not found"}
         }
@@ -292,7 +292,153 @@
         "username": { "type": "string", "description": "The username of the user that has created the test descriptor"}, 
         "testd": { "type": "array", "items": {"$ref": "#/definitions/TestDescriptorData"}}
       }
+    },
+    "NetworkServiceInstances":{
+      "service_instance_uuid": { "type": "string", "description": "The service instance UUID of the NS"},
+      "service_uuid": { "type": "string", "description": "The NS UUID"},
+      "status": { "type": "string", "description": "The status of the NS"},
+      "runtime": { "type": "string", "description": "The runtime info of the NS"}
+    },
+    "TestSuiteResults": {
+      "package_id": { "type": "string", "description": "The UUID of the package to which the test plan has been applied"},
+      "uuid": { "type": "string", "description": "The UUID of the test plresult which we need"},
+      "test_plan_id": { "type": "string", "description": "The UUID of the test plan to which the test result has been applied"},
+      "network_service_instance_id": { "type": "string", "description": "The UUID of the package to which the test plan has been applied"},
+      "test_suite_id": { "type": "string", "description": "The UUID of the test suit "},
+      "status": { "type": "string", "description": "The status of the test suite results"}
+    },
+    ========TestPlan
+    {
+      "created_at": "2018-05-30T08:44:57.575+00:00",
+      "network_service_instances": [
+        {
+          "instance_uuid": "ed036e6a-faeb-4ae0-838f-b8618901ae17",
+          "service_uuid": "58b47eb9-a603-4232-a090-cb3a01456344",
+          "status": "READY",
+          "runtime": null
+        }
+      ],
+      "package_id": "45e20b48-84ff-4b29-8de1-e2e78ffcd6af",
+      "status": "SUCCESS",
+      "test_suite_results": [
+        {
+          "package_id": "45e20b48-84ff-4b29-8de1-e2e78ffcd6af",
+          "uuid": "5b0e6489b371bf0001000003",
+          "test_plan_id": "5b0e6434b371bf0001000001",
+          "service_uuid": "58b47eb9-a603-4232-a090-cb3a01456344",
+          "instance_uuid": "ed036e6a-faeb-4ae0-838f-b8618901ae17",
+          "test_uuid": "ca9a833a-59e1-4fbb-965d-4ae120291488",
+          "status": "SUCCESS"
+        }
+      ],
+      "updated_at": "2018-05-30T08:44:57.575+00:00",
+      "uuid": "5b0e6489b371bf0001000004"
     }
+    
+    ========
+    "TestPlanMetadataReturn":{
+      "type": "object",
+      "properties": {
+        "uuid": { "type": "string", "description": "The UUID of the test plan which we need"},
+        "created_at": { "type": "string", "description": "The date and time on which the test plan was created"},
+        "updated_at": { "type": "string", "description": "The date and time on which the test plan was updated"},
+        "package_id": { "type": "string", "description": "The UUID of the package to which the test plan has been applied"}, 
+        "status": { "type": "string", "description": "The status of the test plan: ‘CREATED', ‘SUCCESS', ’NS_DEPLOYED’, ’NS_DEPLOY_FAILED’, ‘SCHEDULED’, ‘FAILED’, INVALID_TEST_RESULT’, ‘ERROR’."}, 
+        "network_service_instances": { "type": "array", "items": {"$ref": "#/definitions/NetworkServiceInstances"}},
+        "test_suite_results": { "type": "array", "items": {"$ref": "#/definitions/TestSuiteResults"}},
+      }
+    },
+    
+    "details": {
+      "none": 1,
+      "pass": 0,
+      "inconc": 0,
+      "fail": 0,
+      "error": 0
+    },
+    "service_uuid": "58b47eb9-a603-4232-a090-cb3a01456344",
+    "instance_uuid": "ed036e6a-faeb-4ae0-838f-b8618901ae17",
+    "package_id": "25adbc52-3488-443e-bdb2-2c641b113dac",
+    "sterr": "",
+    "stout": "ttcn3_start: Starting the test suite\nspawn /home/node/titan/bin/mctr_cli ...................ted from MC. Terminating HC.\nMC@c838258ada7f: Shutdown complete.\n",
+    "test_plan_id": "5b0d6fb53ac8300001000001",
+    "test_uuid": "abb83bbc-69de-41f3-9606-fdd1f88f6256",
+    "tester_result_text": "15:20:54.044121 - TTCN-3 Main Test Component started on c838258ada7f. Version: CRL 113 2......................ase.\n15:21:44.825975 HTTP_Test.ttcn:251 Local verdict of MTC: none\n15:21:44.826047 HTTP_Test.ttcn:251 No PTCs were created.\n15:21:44.826118 HTTP_Test.ttcn:251 Test case tc_http_getResult finished. Verdict: none\n15:21:44.826470 - Verdict statistics: 1 none (100.00 %), 0 pass (0.00 %), 0 inconc (0.00 %), 0 fail (0.00 %), 0 error (0.00 %).\n15:21:44.826588 - Test execution summary: 1 test case was executed. Overall verdict: none\n15:21:44.826669 - Exit was requested from MC. Terminating MTC.\n",
+    
+    =======TestResult=====
+    {
+        "created_at": "2018-05-29T15:21:45.957+00:00",
+        "details": {
+          "none": 1,
+          "pass": 0,
+          "inconc": 0,
+          "fail": 0,
+          "error": 0
+        },
+        "service_uuid": "58b47eb9-a603-4232-a090-cb3a01456344",
+        "instance_uuid": "ed036e6a-faeb-4ae0-838f-b8618901ae17",
+        "package_id": "25adbc52-3488-443e-bdb2-2c641b113dac",
+        "status": "SUCCESS",
+        "sterr": "",
+        "stout": "ttcn3_start: Starting the test suite\nspawn /home/node/titan/bin/mctr_cli ...................ted from MC. Terminating HC.\nMC@c838258ada7f: Shutdown complete.\n",
+        "test_plan_id": "5b0d6fb53ac8300001000001",
+        "test_uuid": "abb83bbc-69de-41f3-9606-fdd1f88f6256",
+        "tester_result_text": "15:20:54.044121 - TTCN-3 Main Test Component started on c838258ada7f. Version: CRL 113 2......................ase.\n15:21:44.825975 HTTP_Test.ttcn:251 Local verdict of MTC: none\n15:21:44.826047 HTTP_Test.ttcn:251 No PTCs were created.\n15:21:44.826118 HTTP_Test.ttcn:251 Test case tc_http_getResult finished. Verdict: none\n15:21:44.826470 - Verdict statistics: 1 none (100.00 %), 0 pass (0.00 %), 0 inconc (0.00 %), 0 fail (0.00 %), 0 error (0.00 %).\n15:21:44.826588 - Test execution summary: 1 test case was executed. Overall verdict: none\n15:21:44.826669 - Exit was requested from MC. Terminating MTC.\n",
+        "updated_at": "2018-05-29T15:21:45.957+00:00",
+        "uuid": "5b0d70093ac8300001000003"
+      }
+      {
+              "created_at": "2018-07-17T09:47:26.857+00:00", 
+              "details": null, 
+              "instance_uuid": "54ab3215-5dbb-4f7e-8498-eadc752ae65b", 
+              "package_id": "96caa511-d74e-4bd1-89c2-365367e9a233", 
+              "service_uuid": "a1e058f9-9592-408e-928b-8975ff89733c", 
+              "status": "FAILED", 
+              "sterr": "unable to connect to 10.100.32.231:80 Connection timed out\n", 
+              "stout": "Traffic generator configuration: \nLogs: \t\t/workspace/5b4dbaab8a03b40001000002/result.log\nSchema: \thttp://\nVNF External IP: \t10.100.32.231\nService Port: \t80\nConnections: \t100\nDuration: \t300s\nThreads: \t5\nHeader: \t\nTimeout: \t20s\nRate: \t\t2000\nCOMMAND: /usr/local/bin/wrk --connections 100 --duration 100 --threads 5 --timeout 20s --rate 2000  --latency http://10.100.32.231:80\n", 
+              "test_plan_id": "5b4dbaab8a03b40001000001", 
+              "test_uuid": "f45f4773-cbee-471f-8520-f90ce31af145", 
+              "tester_result_text": null, 
+              "updated_at": "2018-07-17T09:47:26.857+00:00", 
+              "uuid": "5b4dbb2e8a03b40001000003"
+          }
+      ==================
+    
+    "TestResultMetadataReturn":{
+      "type": "object",
+      "properties": {
+        "uuid": { "type": "string", "description": "The UUID of the test result which we need"},
+        "created_at": { "type": "string", "description": "The date and time on which the test result was created"},
+        "updated_at": { "type": "string", "description": "The date and time on which the test result was updated"},
+        "package_id": { "type": "string", "description": "The UUID of the package to which the test plan has been applied"}, 
+        "status": { "type": "string", "description": "The status of the test result: SUCCESS, ..."}, 
+        "network_service_instances": { "type": "array", "items": {"$ref": "#/definitions/NetworkServiceInstances"}},
+        "test_suite_results": { "type": "array", "items": {"$ref": "#/definitions/TestSuiteResults"}},
+      }
+    },
+    
+      
+                  
+          "created_at": "2018-05-29T15:21:45.957+00:00",
+              "details": {
+                "none": 1,
+                "pass": 0,
+                "inconc": 0,
+                "fail": 0,
+                "error": 0
+              },
+              "service_uuid": "58b47eb9-a603-4232-a090-cb3a01456344",
+              "instance_uuid": "ed036e6a-faeb-4ae0-838f-b8618901ae17",
+              "package_id": "25adbc52-3488-443e-bdb2-2c641b113dac",
+              "status": "SUCCESS",
+              "sterr": "",
+              "stout": "ttcn3_start: Starting the test suite\nspawn /home/node/titan/bin/mctr_cli ...................ted from MC. Terminating HC.\nMC@c838258ada7f: Shutdown complete.\n",
+              "test_plan_id": "5b0d6fb53ac8300001000001",
+              "test_uuid": "abb83bbc-69de-41f3-9606-fdd1f88f6256",
+              "tester_result_text": "15:20:54.044121 - TTCN-3 Main Test Component started on c838258ada7f. Version: CRL 113 2......................ase.\n15:21:44.825975 HTTP_Test.ttcn:251 Local verdict of MTC: none\n15:21:44.826047 HTTP_Test.ttcn:251 No PTCs were created.\n15:21:44.826118 HTTP_Test.ttcn:251 Test case tc_http_getResult finished. Verdict: none\n15:21:44.826470 - Verdict statistics: 1 none (100.00 %), 0 pass (0.00 %), 0 inconc (0.00 %), 0 fail (0.00 %), 0 error (0.00 %).\n15:21:44.826588 - Test execution summary: 1 test case was executed. Overall verdict: none\n15:21:44.826669 - Exit was requested from MC. Terminating MTC.\n",
+              "updated_at": "2018-05-29T15:21:45.957+00:00",
+              "uuid": "5b0d70093ac8300001000003"
+              
   }
 }
 
