@@ -52,20 +52,26 @@ class FetchTestDescriptorsService < FetchService
     STDERR.puts "#{msg}: descriptors=#{descriptors}"
     
     return descriptors if (!descriptors || descriptors.empty?)
-    if descriptors.is_a?(Hash)
-      count = FetchTestExecutionCountService.call(uuid: descriptors[:uuid])
-      descriptors[:executions] = count
-    else # is_a?(Array)
-      descriptors.each do |descriptor|
-        count = FetchTestExecutionCountService.call(uuid: descriptor[:uuid])
-        descriptor[:executions] = count
-      end
+    return enrich_test_descriptor(descriptor: descriptors) if descriptors.is_a?(Hash)
+    
+    # is_a?(Array)
+    enriched = []
+    descriptors.each do |descriptor|
+      enriched << enrich_test_descriptor(descriptor: descriptor)
     end
-    descriptors
+    enriched
   end
   
   private
-  def self.count_executions
+  def self.enrich_test_descriptor(descriptor:)
+    msg=self.name+'#'+__method__.to_s
+    response = FetchTestExecutionCountService.call(uuid: descriptor[:uuid])
+    STDERR.puts "#{msg}: count=#{response}"
+    descriptor[:executions] = response[:count] unless (!response || response.empty?)
+    response = FetchTestLastTimeExecutedService.call(uuid: descriptor[:uuid])
+    STDERR.puts "#{msg}: last_time_executed=#{response}"
+    descriptor[:last_time_executed] = response[:last_time_executed]  unless (!response || response.empty?)
+    descriptor
   end
 end
 

@@ -35,14 +35,14 @@ require 'ostruct'
 require 'json'
 require_relative './fetch_service'
 
-class FetchTestExecutionCountService < FetchService
+class FetchTestLastTimeExecutedService < FetchService
   NO_REPOSITORY_URL_DEFINED_ERROR='The REPOSITORY_URL ENV variable needs to be defined and pointing to the Repository where to fetch test results'
   REPOSITORY_URL = ENV.fetch('REPOSITORY_URL', '')
   if REPOSITORY_URL == ''
     STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, NO_REPOSITORY_URL_DEFINED_ERROR]
     raise ArgumentError.new(NO_REPOSITORY_URL_DEFINED_ERROR) 
   end
-  # /trr/test-suite-results/counter/:test_uuid
-  self.site=REPOSITORY_URL+'/trr/test-suite-results/count/'
+  #/trr/test-suite-results/last-time-executed/:test_uuid
+  self.site=REPOSITORY_URL+'/trr/test-suite-results/last-time-executed/'
   STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, "self.site=#{self.site}"]
 end
