@@ -43,6 +43,6 @@ class FetchTestLastTimeExecutedService < FetchService
     raise ArgumentError.new(NO_REPOSITORY_URL_DEFINED_ERROR) 
   end
   #/trr/test-suite-results/last-time-executed/:test_uuid
-  self.site=REPOSITORY_URL+'/trr/test-suite-results/last-time-executed/'
+  self.site=REPOSITORY_URL+'/trr/test-suite-results/last-time-executed'
   STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, "self.site=#{self.site}"]
 end
