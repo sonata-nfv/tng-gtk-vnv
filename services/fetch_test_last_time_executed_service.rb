@@ -34,45 +34,15 @@ require 'net/http'
 require 'ostruct'
 require 'json'
 require_relative './fetch_service'
-require_relative './fetch_test_execution_count_service'
 
-class FetchTestDescriptorsService < FetchService
-  
-  NO_CATALOGUE_URL_DEFINED_ERROR='The CATALOGUE_URL ENV variable needs to defined and pointing to the Catalogue where to fetch tests'
-  CATALOGUE_URL = ENV.fetch('CATALOGUE_URL', '')
-  if CATALOGUE_URL == ''
-    STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, 'FetchTDService', NO_CATALOGUE_URL_DEFINED_ERROR]
-    raise ArgumentError.new(NO_CATALOGUE_URL_DEFINED_ERROR) 
+class FetchTestLastTimeExecutedService < FetchService
+  NO_REPOSITORY_URL_DEFINED_ERROR='The REPOSITORY_URL ENV variable needs to be defined and pointing to the Repository where to fetch test results'
+  REPOSITORY_URL = ENV.fetch('REPOSITORY_URL', '')
+  if REPOSITORY_URL == ''
+    STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, NO_REPOSITORY_URL_DEFINED_ERROR]
+    raise ArgumentError.new(NO_REPOSITORY_URL_DEFINED_ERROR) 
   end
-  self.site=CATALOGUE_URL+'/tests'
-  
-  def self.call(params)
-    msg=self.name+'#'+__method__.to_s
-    descriptors = super
-    STDERR.puts "#{msg}: descriptors=#{descriptors}"
-    
-    return descriptors if (!descriptors || descriptors.empty?)
-    return enrich_test_descriptor(descriptor: descriptors) if descriptors.is_a?(Hash)
-    
-    # is_a?(Array)
-    enriched = []
-    descriptors.each do |descriptor|
-      enriched << enrich_test_descriptor(descriptor: descriptor)
-    end
-    enriched
-  end
-  
-  private
-  def self.enrich_test_descriptor(descriptor:)
-    msg=self.name+'#'+__method__.to_s
-    response = FetchTestExecutionCountService.call(uuid: descriptor[:uuid])
-    STDERR.puts "#{msg}: count=#{response}"
-    descriptor[:executions] = response[:count] unless (!response || response.empty?)
-    response = FetchTestLastTimeExecutedService.call(uuid: descriptor[:uuid])
-    STDERR.puts "#{msg}: last_time_executed=#{response}"
-    descriptor[:last_time_executed] = response[:last_time_executed]  unless (!response || response.empty?)
-    descriptor
-  end
+  #/trr/test-suite-results/last-time-executed/:test_uuid
+  self.site=REPOSITORY_URL+'/trr/test-suite-results/last-time-executed'
+  STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, "self.site=#{self.site}"]
 end
-
-

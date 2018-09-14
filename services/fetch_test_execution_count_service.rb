@@ -42,8 +42,7 @@ class FetchTestExecutionCountService < FetchService
     STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, NO_REPOSITORY_URL_DEFINED_ERROR]
     raise ArgumentError.new(NO_REPOSITORY_URL_DEFINED_ERROR) 
   end
-  #http://tng-rep:4012 /test-suite-results  
-  #http://tng-rep:4012/test-plans
-  self.site=REPOSITORY_URL+'/trr/test-suite-results/count/'
+  # /trr/test-suite-results/counter/:test_uuid
+  self.site=REPOSITORY_URL+'/trr/test-suite-results/count'
   STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, "self.site=#{self.site}"]
 end
