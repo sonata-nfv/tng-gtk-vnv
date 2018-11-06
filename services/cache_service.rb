@@ -30,24 +30,63 @@
 ## acknowledge the contributions of their colleagues of the 5GTANGO
 ## partner consortium (www.5gtango.eu).
 # encoding: utf-8
-source 'https://rubygems.org'
-ruby '2.4.3'
+require 'redis'
 
-gem 'rake', '12.3.0'
-gem 'rack', '2.0.4'
-gem 'sinatra', '2.0.2', require: 'sinatra/base'
-gem 'sinatra-contrib', '2.0.2', require: false
-gem 'sinatra-cross_origin', '0.4.0'
-gem 'redis', '4.0.3'
+class CacheService
+  
+  class RedisCache 
+    class << self
+      attr_accessor :store
+    end
+    
+    def store=(value) self.class.store = value end
+    def store() self.class.store end
 
-gem 'puma', '3.11.0'
+    begin
+      self.store = Redis.new
+    rescue StandardError => e
+      e.inspect
+      e.message
+    end
+    def self.set(key, val) self.store.set(key, val) end
+    def self.get(key)      self.store.get(key) end
+    def self.del(key)      self.store.set(key, nil) end
+  end
+  
+  class MemoryCache
+    class << self
+      attr_accessor :store
+    end
+    def store=(value) self.class.store = value end
+    def store() self.class.store end
+    self.store = {}
+    def self.set(key, val) self.store[key] = val end
+    def self.get(key)      self.store[key] end
+    def self.del(key)      self.store[key] = nil end
+  end
 
-gem 'ci_reporter_rspec', '1.0.0'
-gem 'rubocop', '0.52.0'
-gem 'rubocop-checkstyle_formatter', '0.4.0', require: false
+  STRATEGIES = {
+    redis: RedisCache, #CacheService::RedisCache,
+    memory: MemoryCache, #CacheService::MemoryCache
+  }
+  class << self
+    attr_accessor :strategy
+  end
 
-group :test do
-  gem 'webmock', '3.1.1'
-  gem 'rspec', '3.7.0'
-  gem 'rack-test', '0.8.2'
+  def strategy=(value) self.class.strategy = value end
+  def strategy() self.class.strategy end
+  
+  self.strategy = ENV['REDIS_URL'] ? STRATEGIES[:redis] : STRATEGIES[:memory]
+  STDERR.puts "Strategy used: #{self.strategy}"
+  
+  def self.set(key, val)
+    STDERR.puts "Setting key '#{key}' with value '#{val}' (strategy #{self.strategy})"
+    self.strategy.set(key, val)
+  end
+  def self.get(key)
+    STDERR.puts "Getting key '#{key}' (strategy #{self.strategy})"
+    self.strategy.get(key)
+  end
+  def self.del(key)      self.strategy.del(key) end
+  
 end
