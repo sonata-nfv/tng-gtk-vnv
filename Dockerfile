@@ -43,6 +43,7 @@ EXPOSE 5000
 ENV CATALOGUE_URL=http://tng-cat:4011/catalogues/api/v2
 ENV REPOSITORY_URL=http://tng-rep:4012
 ENV VNV_LCM_URL=http://tng-vnv-lcm:6100/api/v1
+ENV REDIS_URL=redis://son-redis:6379
 ENV PORT 5000
 CMD ["bundle", "exec", "rackup", "-p", "5000", "--host", "0.0.0.0"]
 
