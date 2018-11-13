@@ -67,7 +67,7 @@ class CacheService
 
   STRATEGIES = {
     redis: RedisCache, #CacheService::RedisCache,
-    memory: MemoryCache, #CacheService::MemoryCache
+    memory: MemoryCache #CacheService::MemoryCache
   }
   class << self
     attr_accessor :strategy
