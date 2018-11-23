@@ -33,23 +33,28 @@
 require 'net/http'
 require 'uri'
 require 'json'
+require 'tng/gtk/utils/logger'
 
 class CreateTestPlansService 
+  LOGGER=Tng::Gtk::Utils::Logger
+  LOGGED_COMPONENT=self.name
+  @@began_at = Time.now.utc
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
   NO_VNV_LCM_URL_DEFINED_ERROR='The VNV_LCM_URL ENV variable needs to be defined and pointing to the V&V LCM component, where to request new test plans'
   VNV_LCM_URL = ENV.fetch('VNV_LCM_URL', '')
   if VNV_LCM_URL == ''
-    STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, NO_VNV_LCM_URL_DEFINED_ERROR]
+    LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: NO_VNV_LCM_URL_DEFINED_ERROR)
     raise ArgumentError.new(NO_VNV_LCM_URL_DEFINED_ERROR) 
   end
   @@site=VNV_LCM_URL+'/schedulers'
-  STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, "@@site=#{@@site}"]
+  LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: "@@site=#{@@site}")
   
   # POST /api/v1/schedulers/services, with body {"test_uuid": “0101”}
   # POST /api/v1/schedulers/tests, with body {"service_uuid": “9101”}
 
   def self.call(params)
-    msg=self.name+'#'+__method__.to_s
-    STDERR.puts "#{msg}: params=#{params} site=#{@@site}"
+    msg='.'+__method__.to_s
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "params=#{params}")
     uri = URI.parse(params.key?(:service_uuid) ? @@site+'/services' : @@site+'/tests')
 
     # Create the HTTP objects
@@ -60,20 +65,23 @@ class CreateTestPlansService
     # Send the request
     begin
       response = http.request(request)
-      STDERR.puts "#{msg}: response=#{response}"
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "response=#{response}")
       case response
       when Net::HTTPSuccess, Net::HTTPCreated
         body = response.body
-        STDERR.puts "#{msg}: #{response.code} body=#{body}"
+        LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "#{response.code} body=#{body}")
         return JSON.parse(body, quirks_mode: true, symbolize_names: true)
       else
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message: "#{response.message}")
         return {error: "#{response.message}"}
       end
     rescue Exception => e
-      STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, msg, e.message]
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message: e.message)
+      STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, msg, ]
     end
     nil
   end
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ending at #{Time.now.utc}", time_elapsed: Time.now.utc - @@began_at)
 end
 
 

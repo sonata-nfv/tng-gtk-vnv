@@ -29,34 +29,40 @@
 # encoding: utf-8
 require 'sinatra'
 require 'json'
-require 'logger'
+require 'tng/gtk/utils/logger'
 require 'securerandom'
+require 'tng/gtk/utils/application_controller'
 
-class RecordsController < ApplicationController
+class RecordsController < Tng::Gtk::Utils::ApplicationController
+  LOGGER=Tng::Gtk::Utils::Logger
+  LOGGED_COMPONENT=self.name
+  @@began_at = Time.now.utc
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
 
   ERROR_RECORD_NOT_FOUND="No record with UUID '%s' was found"
-
-  @@began_at = Time.now.utc
-  settings.logger.info(self.name) {"Started at #{@@began_at}"}
-  before { content_type :json}
   
   get '/?' do 
-    msg='RecordsController.get /records (many)'
+    msg='.'+__method__.to_s+' (many)'
     captures=params.delete('captures') if params.key? 'captures'
-    STDERR.puts "#{msg}: params=#{params}"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
     result = FetchTestResultsService.call(symbolized_hash(params))
-    STDERR.puts "#{msg}: result=#{result}"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"result=#{result}")
     halt 404, {}, {error: "No records fiting the provided parameters ('#{params}') were found"}.to_json if result.to_s.empty? # covers nil
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:result.to_json, status: '200')
     halt 200, {}, result.to_json
   end
   
   get '/:record_uuid/?' do 
-    msg='RecordsController.get /records (single)'
+    msg='.'+__method__.to_s+' (single)'
     captures=params.delete('captures') if params.key? 'captures'
-    STDERR.puts "#{msg}: params['record_uuid']='#{params['record_uuid']}'"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params['record_uuid']='#{params['record_uuid']}")
     result = FetchTestResultsService.call(uuid: params['record_uuid'])
-    STDERR.puts "#{msg}: result=#{result}"
-    halt 404, {}, {error: ERROR_RECORD_NOT_FOUND % params['record_uuid']}.to_json if result == {}
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"result=#{result}")
+    if result == {}
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:ERROR_RECORD_NOT_FOUND % params['record_uuid'], status: '404')
+      halt 404, {}, {error:ERROR_RECORD_NOT_FOUND % params['record_uuid']}.to_json
+    end
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:result.to_json, status: '200')
     halt 200, {}, result.to_json
   end
 
@@ -67,13 +73,9 @@ class RecordsController < ApplicationController
     halt 200
   end
     
-  private
-  def uuid_valid?(uuid)
-    return true if (uuid =~ /[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/) == 0
-    false
-  end
-  
+  private  
   def symbolized_hash(hash)
     Hash[hash.map{|(k,v)| [k.to_sym,v]}]
   end
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ended at #{Time.now.utc}", time_elapsed:"#{Time.now.utc-began_at}")
 end

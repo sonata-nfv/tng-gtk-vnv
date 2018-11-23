@@ -31,15 +31,18 @@
 ## partner consortium (www.5gtango.eu).
 # encoding: utf-8
 require 'sinatra/base'
-require './controllers/application_controller.rb'
+require 'tng/gtk/utils/application_controller'
 require './controllers/plans_controller.rb'
 require './controllers/records_controller.rb'
 require './controllers/pings_controller.rb'
 require './controllers/descriptors_controller.rb'
 require './controllers/root_controller.rb'
 Dir.glob('./services/*.rb').each { |file| require file }
+ENV['RACK_ENV'] ||= 'production'
+
 map('/results') { run RecordsController }
 map('/plans') { run PlansController }
 map('/pings') { run PingsController }
 map('/descriptors') { run DescriptorsController }
 map('/') { run RootController }
+

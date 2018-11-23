@@ -33,17 +33,22 @@
 require 'net/http'
 require 'ostruct'
 require 'json'
-require_relative './fetch_service'
-
-class FetchTestResultsService < FetchService
+require 'tng/gtk/utils/logger'
+require 'tng/gtk/utils/fetch'
+class FetchTestResultsService < Tng::Gtk::Utils::Fetch
+  LOGGER=Tng::Gtk::Utils::Logger
+  LOGGED_COMPONENT=self.name
+  @@began_at = Time.now.utc
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
   NO_REPOSITORY_URL_DEFINED_ERROR='The REPOSITORY_URL ENV variable needs to be defined and pointing to the Repository where to fetch test results'
   REPOSITORY_URL = ENV.fetch('REPOSITORY_URL', '')
   if REPOSITORY_URL == ''
-    STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, NO_REPOSITORY_URL_DEFINED_ERROR]
+    LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: NO_REPOSITORY_URL_DEFINED_ERROR)
     raise ArgumentError.new(NO_REPOSITORY_URL_DEFINED_ERROR) 
   end
   #http://tng-rep:4012 /test-suite-results  
   #http://tng-rep:4012/test-plans
   self.site=REPOSITORY_URL+'/trr/test-suite-results'
-  STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, self.name, "self.site=#{self.site}"]
+  LOGGER.debug(component:LOGGED_COMPONENT, operation:'initializing', message: "self.site=#{self.site}")
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ending at #{Time.now.utc}", time_elapsed: Time.now.utc - @@began_at)
 end

@@ -29,40 +29,49 @@
 ## the Horizon 2020 and 5G-PPP programmes. The authors would like to
 ## acknowledge the contributions of their colleagues of the 5GTANGO
 ## partner consortium (www.5gtango.eu).
+# frozen_string_literal: true
 # encoding: utf-8
-require 'sinatra/base'
-require 'sinatra/config_file'
-require 'sinatra/cross_origin'
-require 'logger'
-
-class ApplicationController < Sinatra::Base
-  register Sinatra::ConfigFile
-  register Sinatra::CrossOrigin
-  #register Sinatra::Logger
-
-  msg = self.name
-  LOGGER_LEVEL= ENV.fetch('LOGGER_LEVEL', 'info')
-  set :began_at, Time.now.utc
-  set :bind, '0.0.0.0'
-  set :environments, %w(development pre-int integration demo qualification staging)
-  set :environment, ENV.fetch('RACK_ENV', :development)
-  enable :cross_origin
-  enable :logging
-  set :logger, Logger.new(STDERR)
-  set :logger_level, LOGGER_LEVEL.to_sym
-  
-  #The environment variable DATABASE_URL should be in the following format:
-  # => postgres://{user}:{password}@{host}:{port}/path_to_database
-  #configure :development, :test, :'pre-int', :integration, :demo, :qualification, :staging do
-  	#db = URI.parse(ENV['DATABASE_URL'] || 'postgresql://localhost:5432/gatekeeper')
-
-  	#ActiveRecord::Base.establish_connection(
-  	#		:adapter => db.scheme == 'postgres' ? 'postgresql' : db.scheme,
-  	#		:host     => db.host,
-  	#		:username => db.user,
-  	#		:password => db.password,
-  	#		:database => db.path[1..-1],
-  	#		:encoding => 'utf8'
-  	#)
-    #end
+require 'rspec/core/rake_task'
+require 'ci/reporter/rake/rspec'
+require 'tng/gtk/utils/application_controller'
+%w{ controllers models services }.each do |dir|
+  path = File.expand_path(File.join(File.dirname(__FILE__), '../', dir))
+  $LOAD_PATH << path
 end
+
+task default: ['ci:all']
+
+desc 'Run Unit Tests'
+RSpec::Core::RakeTask.new :specs do |task|
+  task.pattern = Dir['spec/**/*_spec.rb']
+end
+
+# use like in
+#   rake ci:all
+desc 'Runs all test tasks'
+task 'ci:all' => ['ci:setup:rspec', 'specs']
+
+namespace :db do
+  task :load_config do
+    require './controllers/requests_controller'
+  end
+end
+
+# from https://opensoul.org/2012/05/30/releasing-multiple-gems-from-one-repository/
+#desc 'Build gem into the pkg directory'
+#task :build do
+#  FileUtils.rm_rf('pkg')
+#  Dir['*.gemspec'].each do |gemspec|
+#    system "gem build #{gemspec}"
+#  end
+#  FileUtils.mkdir_p('pkg')
+#  FileUtils.mv(Dir['*.gem'], 'pkg')
+#end
+
+#desc 'Tags version, pushes to remote, and pushes gem'
+#task :release => :build do
+#  sh 'git', 'tag', '-m', changelog, "v#{Qu::VERSION}"
+#  sh "git push origin master"
+#  sh "git push origin v#{Qu::VERSION}"
+#  sh "ls pkg/*.gem | xargs -n 1 gem push"
+#end

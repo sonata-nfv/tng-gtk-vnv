@@ -30,26 +30,27 @@
 require 'sinatra'
 require 'json'
 require 'logger'
+require 'tng/gtk/utils/logger'
+require 'tng/gtk/utils/application_controller'
 
-class RootController < ApplicationController
+class RootController < Tng::Gtk::Utils::ApplicationController
 
+  LOGGER=Tng::Gtk::Utils::Logger
+  LOGGED_COMPONENT=self.name
   @@began_at = Time.now.utc
-  settings.logger.info(self.name) {"Started at #{@@began_at}"}
-  before { content_type :json}
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
 
-  OK_ROOT_ROUTE="This is the root route of the 5GTANGO Validation and Verification Platform"
-  
+  OK_ROOT_ROUTE="This is the root route of the 5GTANGO Gatekeeper Validation and Verification Platform specific component"
+
   get '/?' do
     content_type :text
     halt 200, {}, [OK_ROOT_ROUTE]
+    #api = open('./config/api.yml')
+    #halt 200, api.read.to_s
   end
-  
+
   error Sinatra::NotFound do
     halt 404, {}, {error: "Route #{request.url} not found"}.to_json
   end
-  
-  private 
-  def symbolized_hash(hash)
-    Hash[hash.map{|(k,v)| [k.to_sym,v]}]
-  end
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ending at #{Time.now.utc}", time_elapsed: Time.now.utc - @@began_at)
 end
