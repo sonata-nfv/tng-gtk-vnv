@@ -29,32 +29,42 @@
 # encoding: utf-8
 require 'sinatra'
 require 'json'
-require 'logger'
+require 'tng/gtk/utils/logger'
+require 'tng/gtk/utils/application_controller'
 
-class DescriptorsController < ApplicationController
+class DescriptorsController < Tng::Gtk::Utils::ApplicationController
+  LOGGER=Tng::Gtk::Utils::Logger
+  LOGGED_COMPONENT=self.name
+  @@began_at = Time.now.utc
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
 
   ERROR_TEST_NOT_FOUND="No test with UUID '%s' was found"
-  @@began_at = Time.now.utc
-  settings.logger.info(self.name) {"Started at #{@@began_at}"}
-  before { content_type :json}
   
   get '/?' do 
-    msg='DescriptorsController.get /descriptors (many)'
+    msg='.'+__method__.to_s+' (many)'
     captures=params.delete('captures') if params.key? 'captures'
-    STDERR.puts "#{msg}: params=#{params}"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
     result = FetchTestDescriptorsService.call(symbolized_hash(params))
-    STDERR.puts "#{msg}: result=#{result}"
-    halt 404, {}, {error: "No tests fiting the provided parameters ('#{params}') were found"}.to_json if result.to_s.empty? # covers nil
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"result=#{result}")
+    if result.to_s.empty?
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"No tests fiting the provided parameters ('#{params}') were found", status: '404')
+      halt 404, {}, {error: "No tests fiting the provided parameters ('#{params}') were found"}.to_json 
+    end
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:result.to_json, status: '200')
     halt 200, {}, result.to_json
   end
   
   get '/:test_uuid/?' do 
-    msg='DescriptorsController.get /descriptors (single)'
+    msg='.'+__method__.to_s+' (single)'
     captures=params.delete('captures') if params.key? 'captures'
-    STDERR.puts "#{msg}: params=#{params}"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
     result = FetchTestDescriptorsService.call(uuid: params['test_uuid'])
-    STDERR.puts "#{msg}: result=#{result}"
-    halt 404, {}, {error: ERROR_TEST_NOT_FOUND % params[:test_uuid]}.to_json if result.to_s.empty? # covers nil
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"result=#{result}")
+    if result.to_s.empty?
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:ERROR_TEST_NOT_FOUND % params[:test_uuid], status: '404')
+      halt 404, {}, {error: ERROR_TEST_NOT_FOUND % params[:test_uuid]}.to_json
+    end
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:result.to_json, status: '200')
     halt 200, {}, result.to_json
   end
   
@@ -69,4 +79,5 @@ class DescriptorsController < ApplicationController
   def symbolized_hash(hash)
     Hash[hash.map{|(k,v)| [k.to_sym,v]}]
   end
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ended at #{Time.now.utc}", time_elapsed:"#{Time.now.utc-began_at}")
 end

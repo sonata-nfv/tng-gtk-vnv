@@ -29,10 +29,15 @@
 # encoding: utf-8
 require 'sinatra'
 require 'json'
-require 'logger'
 require 'securerandom'
+require 'tng/gtk/utils/logger'
+require 'tng/gtk/utils/application_controller'
 
-class PlansController < ApplicationController
+class PlansController < Tng::Gtk::Utils::ApplicationController
+  LOGGER=Tng::Gtk::Utils::Logger
+  LOGGED_COMPONENT=self.name
+  @@began_at = Time.now.utc
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
 
   ERROR_PLAN_NOT_FOUND="No plan with UUID '%s' was found"
   ERROR_EMPTY_BODY = <<-eos 
@@ -40,29 +45,36 @@ class PlansController < ApplicationController
      \tservice_uuid: the UUID of the service to be tested
      \ttest_uuid: the UUID of the test to be executed
   eos
-
-  @@began_at = Time.now.utc
-  settings.logger.info(self.name) {"Started at #{@@began_at}"}
-  before { content_type :json}
-  
   get '/?' do 
-    msg='PlansController.get /plans (many)'
+    msg='.'+__method__.to_s+' (many)'
     captures=params.delete('captures') if params.key? 'captures'
-    STDERR.puts "#{msg}: params=#{params}"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
     result = FetchTestPlansService.call(symbolized_hash(params))
-    STDERR.puts "#{msg}: result=#{result}"
-    halt 404, {}, {error: "No test plans fiting the provided parameters ('#{params}') were found"}.to_json if result.to_s.empty? # covers nil
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"result=#{result}")
+    if result.to_s.empty?
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"No test plans fiting the provided parameters ('#{params}') were found", status: '404')
+      halt 404, {}, {error: "No test plans fiting the provided parameters ('#{params}') were found"}.to_json 
+    end
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:result.to_json, status: '200')
     halt 200, {}, result.to_json
   end
   
   get '/:plan_uuid/?' do 
-    msg='PlansController.get /plans (single)'
+    msg='.'+__method__.to_s+' (single)'
     captures=params.delete('captures') if params.key? 'captures'
-    STDERR.puts "#{msg}: params['plan_uuid']='#{params['plan_uuid']}'"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
+    unless uuid_valid?(params['plan_uuid'])
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"UUID '#{params['plan_uuid']} not valid", status: '400')
+      halt_with_code_body(400, "UUID '#{params['plan_uuid']} not valid") 
+    end
     result = FetchTestPlansService.call(uuid: params['plan_uuid'])
-    STDERR.puts "#{msg}: result=#{result}"
-    halt 404, {}, {error: ERROR_PLAN_NOT_FOUND % params['plan_uuid']}.to_json if result == {}
-    halt 200, {}, result.to_json
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"result=#{result}")
+    if result == {}
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:ERROR_PLAN_NOT_FOUND % params['plan_uuid'], status: '404')
+      halt_with_code_body(404, {error:"No test plans fiting the provided parameters ('#{params}') were found"}.to_json) 
+    end
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:result.to_json, status: '200')
+    halt_with_code_body(200, result.to_json) 
   end
 
   options '/?' do
@@ -73,20 +85,34 @@ class PlansController < ApplicationController
   end
   
   post '/?' do
-    msg='PlansController.post /plans'
+    msg='.'+__method__.to_s
 
     body = request.body.read
-    halt_with_code_body(400, ERROR_EMPTY_BODY.to_json) if body.empty?
+    if body.empty?
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:ERROR_EMPTY_BODY.to_json, status: '400')
+      halt_with_code_body(400, ERROR_EMPTY_BODY.to_json) 
+    end
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"body=#{body}")
     
     begin
       params = JSON.parse(body, quirks_mode: true, symbolize_names: true)
-      halt_with_code_body(400, ERROR_EMPTY_BODY.to_json) unless valid_parameters?(params)
+      unless valid_parameters?(params)
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Parameters #{params} are not valid", status: '400')
+        halt_with_code_body(400, {error: "Parameters #{params} are not valid"}.to_json) 
+      end
       saved_request = CreateTestPlansService.call(params)
-      STDERR.puts "#{msg}: saved_request='#{saved_request.inspect}'"
-      halt_with_code_body(400, {error: "Error creating the test plan"}.to_json) if saved_request.nil? 
-      halt_with_code_body(404, {error: saved_request[:error]}.to_json) if (saved_request && saved_request.is_a?(Hash) && saved_request.key?(:error))
+      if saved_request.nil? 
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error creating the test plan")
+        halt_with_code_body(400, {error: "Error creating the test plan"}.to_json) 
+      end
+      if (saved_request && saved_request.is_a?(Hash) && saved_request.key?(:error))
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:saved_request[:error])
+        halt_with_code_body(404, {error: saved_request[:error]}.to_json) 
+      end
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:saved_request.to_json, status: '201')
       halt_with_code_body(201, saved_request.to_json)
     rescue JSON::ParserError => e
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error parsing params #{params}")
       halt_with_code_body(400, {error: "Error parsing params #{params}"}.to_json)
     end
   end
@@ -108,4 +134,5 @@ class PlansController < ApplicationController
   def valid_parameters?(params)
     params.key?(:service_uuid) || params.key?(:test_uuid)
   end
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ended at #{Time.now.utc}", time_elapsed:"#{Time.now.utc-began_at}")
 end

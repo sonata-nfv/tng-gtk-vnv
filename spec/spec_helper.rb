@@ -36,11 +36,9 @@ require 'webmock/rspec'
 
 ENV['RACK_ENV'] = 'test'
 #$LOAD_PATH << '../models'
-require_relative File.dirname(__FILE__) + '/../controllers/application_controller'
 require_relative File.dirname(__FILE__) + '/../controllers/root_controller'
 require_relative File.dirname(__FILE__) + '/../controllers/pings_controller'
 require_relative File.dirname(__FILE__) + '/../controllers/records_controller'
-require_relative File.dirname(__FILE__) + '/../services/fetch_service'
 require_relative File.dirname(__FILE__) + '/../services/fetch_test_results_service'
 
 RSpec.configure do |config|

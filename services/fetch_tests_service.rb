@@ -33,23 +33,29 @@
 require 'net/http'
 require 'ostruct'
 require 'json'
-require_relative './fetch_service'
+require 'tng/gtk/utils/logger'
+require 'tng/gtk/utils/fetch'
 require_relative './fetch_test_execution_count_service'
 
-class FetchTestDescriptorsService < FetchService
+class FetchTestDescriptorsService < Tng::Gtk::Utils::Fetch
+  LOGGER=Tng::Gtk::Utils::Logger
+  LOGGED_COMPONENT=self.name
+  @@began_at = Time.now.utc
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
   
   NO_CATALOGUE_URL_DEFINED_ERROR='The CATALOGUE_URL ENV variable needs to defined and pointing to the Catalogue where to fetch tests'
   CATALOGUE_URL = ENV.fetch('CATALOGUE_URL', '')
   if CATALOGUE_URL == ''
+    LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: NO_CATALOGUE_URL_DEFINED_ERROR)
     STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, 'FetchTDService', NO_CATALOGUE_URL_DEFINED_ERROR]
     raise ArgumentError.new(NO_CATALOGUE_URL_DEFINED_ERROR) 
   end
   self.site=CATALOGUE_URL+'/tests'
   
   def self.call(params)
-    msg=self.name+'#'+__method__.to_s
+    msg='.'+__method__.to_s
     descriptors = super
-    STDERR.puts "#{msg}: descriptors=#{descriptors}"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "descriptors=#{descriptors}")
     
     return descriptors if (!descriptors || descriptors.empty?)
     return enrich_test_descriptor(descriptor: descriptors) if descriptors.is_a?(Hash)
@@ -64,15 +70,16 @@ class FetchTestDescriptorsService < FetchService
   
   private
   def self.enrich_test_descriptor(descriptor:)
-    msg=self.name+'#'+__method__.to_s
+    msg='.'+__method__.to_s
     response = FetchTestExecutionCountService.call(uuid: descriptor[:uuid])
-    STDERR.puts "#{msg}: count=#{response}"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "count=#{response}")
     descriptor[:executions] = response[:count] unless (!response || response.empty?)
     response = FetchTestLastTimeExecutedService.call(uuid: descriptor[:uuid])
-    STDERR.puts "#{msg}: last_time_executed=#{response}"
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "last_time_executed=#{response}")
     descriptor[:last_time_executed] = response[:last_time_executed]  unless (!response || response.empty?)
     descriptor
   end
+  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ending at #{Time.now.utc}", time_elapsed: Time.now.utc - @@began_at)
 end
 
 
