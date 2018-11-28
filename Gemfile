@@ -46,7 +46,7 @@ gem 'ci_reporter_rspec', '1.0.0'
 gem 'rubocop', '0.52.0'
 gem 'rubocop-checkstyle_formatter', '0.4.0', require: false
 
-gem 'tng-gtk-utils', '0.4.0'
+gem 'tng-gtk-utils', '0.4.1'
 
 group :test do
   gem 'webmock', '3.1.1'
