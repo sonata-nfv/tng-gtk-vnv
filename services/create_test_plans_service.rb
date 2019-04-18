@@ -40,13 +40,13 @@ class CreateTestPlansService
   LOGGED_COMPONENT=self.name
   @@began_at = Time.now.utc
   LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
-  NO_VNV_LCM_URL_DEFINED_ERROR='The VNV_LCM_URL ENV variable needs to be defined and pointing to the V&V LCM component, where to request new test plans'
-  VNV_LCM_URL = ENV.fetch('VNV_LCM_URL', '')
-  if VNV_LCM_URL == ''
-    LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: NO_VNV_LCM_URL_DEFINED_ERROR)
-    raise ArgumentError.new(NO_VNV_LCM_URL_DEFINED_ERROR) 
+  NO_VNV_PLANER_URL_DEFINED_ERROR='The VNV_PLANER_URL ENV variable needs to be defined and pointing to the V&V Planner component, where to request new test plans'
+  VNV_PLANER_URL = ENV.fetch('VNV_PLANER_URL', '')
+  if VNV_PLANER_URL == ''
+    LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: NO_VNV_PLANER_URL_DEFINED_ERROR)
+    raise ArgumentError.new(NO_VNV_PLANER_URL_DEFINED_ERROR) 
   end
-  @@site=VNV_LCM_URL+'/schedulers'
+  @@site=VNV_PLANER_URL+'/test-plans'
   LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: "@@site=#{@@site}")
   
   # POST /api/v1/schedulers/services, with body {"test_uuid": “0101”}
