@@ -42,7 +42,7 @@ COPY . /app
 EXPOSE 5000
 ENV CATALOGUE_URL=http://tng-cat:4011/catalogues/api/v2
 ENV REPOSITORY_URL=http://tng-rep:4012
-ENV VNV_PLANER_URL=http://tng-vnv-planner:6100/api/v1/test-plans
+ENV PLANNER_URL=http://tng-vnv-planner:6100/api/v1/test-plans
 #ENV REDIS_URL=redis://son-redis:6379
 ENV PORT 5000
 CMD ["bundle", "exec", "rackup", "-p", "5000", "--host", "0.0.0.0"]

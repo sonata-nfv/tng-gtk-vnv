@@ -47,33 +47,23 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
   eos
   get '/?' do 
     msg='.'+__method__.to_s+' (many)'
-    captures=params.delete('captures') if params.key? 'captures'
     LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
+    captures=params.delete('captures') if params.key? 'captures'
     result = FetchTestPlansService.call(symbolized_hash(params))
     LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"result=#{result}")
-    if result.to_s.empty?
-      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"No test plans fiting the provided parameters ('#{params}') were found", status: '404')
-      halt 404, {}, {error: "No test plans fiting the provided parameters ('#{params}') were found"}.to_json 
-    end
-    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:result.to_json, status: '200')
+    halt 404, {}, {error: "No test plans fiting the provided parameters ('#{params}') were found"}.to_json if result.to_s.empty?
     halt 200, {}, result.to_json
   end
   
   get '/:plan_uuid/?' do 
     msg='.'+__method__.to_s+' (single)'
     captures=params.delete('captures') if params.key? 'captures'
-    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
     unless uuid_valid?(params['plan_uuid'])
       LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"UUID '#{params['plan_uuid']} not valid", status: '400')
       halt_with_code_body(400, "UUID '#{params['plan_uuid']} not valid") 
     end
     result = FetchTestPlansService.call(uuid: params['plan_uuid'])
-    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"result=#{result}")
-    if result == {}
-      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:ERROR_PLAN_NOT_FOUND % params['plan_uuid'], status: '404')
-      halt_with_code_body(404, {error:"No test plans fiting the provided parameters ('#{params}') were found"}.to_json) 
-    end
-    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:result.to_json, status: '200')
+    halt_with_code_body(404, {error:"No test plans fiting the provided parameters ('#{params}') were found"}.to_json) if result == {}
     halt_with_code_body(200, result.to_json) 
   end
 
