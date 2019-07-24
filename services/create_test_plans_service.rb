@@ -109,6 +109,37 @@ class CreateTestPlansService
     end
     nil
   end
+  
+  # PUT /api/v1/test-plans/{uuid}
+  def self.update(params)
+    msg='.'+__method__.to_s
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "params=#{params}")
+    uri = URI.parse(@@site+"/#{params['plan_uuid']}")
+
+    # Create the HTTP objects
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Put.new(uri.path.concat("?status=#{params['status']}"))
+    request['Content-Type'] = 'application/json'
+
+    # Send the request
+    begin
+      response = http.request(request)
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "response=#{response}")
+      case response
+      when Net::HTTPSuccess, Net::HTTPCreated
+        body = response.body
+        LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "#{response.code} body=#{body}")
+        return JSON.parse(body, quirks_mode: true, symbolize_names: true)
+      else
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message: "#{response.message}")
+        return {error: "#{response.message}"}
+      end
+    rescue Exception => e
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message: e.message)
+      STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, msg, ]
+    end
+    nil
+  end
 end
 
 

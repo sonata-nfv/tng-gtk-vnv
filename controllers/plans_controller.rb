@@ -81,7 +81,7 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
 
     body = request.body.read
     if body.empty?
-      if (params.fetch(:confirm_required, '').empty? || params.fetch(:test_uuid, '').empty?)
+      if (params.fetch('confirm_required', '').empty? || params.fetch('test_uuid', '').empty?)
         error = 'Either a body or both "confirmation_required" and "test_uuid" have to be provided'
         LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:error, status: '400')
         halt_with_code_body(400, error.to_json) 
@@ -130,7 +130,31 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
       halt_with_code_body(400, {error: "Error parsing params #{params}"}.to_json)
     end
   end
-      
+  
+  put '/:plan_uuid/?' do 
+    msg='.'+__method__.to_s
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
+
+    if params.fetch(:status, '').empty?
+      error = 'Status has to be provided as a query parameter'
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:error, status: '400')
+      halt_with_code_body(400, error.to_json) 
+    end
+  
+    to_be_updated_request = FetchTestPlansService.call(params['plan_uuid'])
+    unless to_be_updated_request 
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error finding test plan '#{params['plan_uuid']}'")
+      halt_with_code_body(400, {error: "Error finding test plan '#{params['plan_uuid']}'"}.to_json) 
+    end
+    if (to_be_updated_request && to_be_updated_request.is_a?(Hash) && to_be_updated_request.key?(:error))
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:to_be_updated_request[:error])
+      halt_with_code_body(404, {error: to_be_updated_request[:error]}.to_json) 
+    end
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:to_be_updated_request.to_json, status: '201')
+    halt_with_code_body(201, to_be_updated_request.to_json)
+  end
+  
+    
   private
   def uuid_valid?(uuid)
     return true if (uuid =~ /[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/) == 0
