@@ -38,8 +38,6 @@ require 'tng/gtk/utils/logger'
 class CreateTestPlansService 
   LOGGER=Tng::Gtk::Utils::Logger
   LOGGED_COMPONENT=self.name
-  @@began_at = Time.now.utc
-  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
   NO_PLANNER_URL_DEFINED_ERROR='The PLANNER_URL ENV variable needs to be defined and pointing to the V&V Planner component, where to request new test plans'
   PLANNER_URL = ENV.fetch('PLANNER_URL', '')
   if PLANNER_URL == ''
@@ -81,7 +79,36 @@ class CreateTestPlansService
     end
     nil
   end
-  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ending at #{Time.now.utc}", time_elapsed: Time.now.utc - @@began_at)
+
+  def self.call_with_params(params)
+    msg='.'+__method__.to_s
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "params=#{params}")
+    uri = URI.parse(@@site+'/tests')
+
+    # Create the HTTP objects
+    http = Net::HTTP.new(uri.host, uri.port)
+    request = Net::HTTP::Post.new(uri.path.concat("?confirmRequired=#{params[:confirm_required]}&test_uuid=#{params[:test_uuid]}"))
+    request['Content-Type'] = 'application/json'
+
+    # Send the request
+    begin
+      response = http.request(request)
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "response=#{response}")
+      case response
+      when Net::HTTPSuccess, Net::HTTPCreated
+        body = response.body
+        LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "#{response.code} body=#{body}")
+        return JSON.parse(body, quirks_mode: true, symbolize_names: true)
+      else
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message: "#{response.message}")
+        return {error: "#{response.message}"}
+      end
+    rescue Exception => e
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message: e.message)
+      STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, msg, ]
+    end
+    nil
+  end
 end
 
 
