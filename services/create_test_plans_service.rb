@@ -87,7 +87,7 @@ class CreateTestPlansService
 
     # Create the HTTP objects
     http = Net::HTTP.new(uri.host, uri.port)
-    request = Net::HTTP::Post.new(uri.path.concat("?confirm_required=#{params[:confirm_required]}&test_uuid=#{params[:test_uuid]}"))
+    request = Net::HTTP::Post.new(uri.path.concat("?confirmRequired=#{params[:confirm_required]}&test_uuid=#{params[:test_uuid]}"))
     request['Content-Type'] = 'application/json'
 
     # Send the request

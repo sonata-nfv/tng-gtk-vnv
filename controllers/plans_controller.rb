@@ -81,8 +81,30 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
 
     body = request.body.read
     if body.empty?
-      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:ERROR_EMPTY_BODY.to_json, status: '400')
-      halt_with_code_body(400, ERROR_EMPTY_BODY.to_json) 
+      if (params.fetch(:confirm_required, '').empty? || params.fetch(:test_uuid, '').empty?)
+        error = 'Either a body or both "confirmation_required" and "test_uuid" have to be provided'
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:error, status: '400')
+        halt_with_code_body(400, error.to_json) 
+      else
+        LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
+    
+        begin
+          saved_request = CreateTestPlansService.call_with_params(params)
+          if saved_request.nil? 
+            LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error creating the test plan")
+            halt_with_code_body(400, {error: "Error creating the test plan"}.to_json) 
+          end
+          if (saved_request && saved_request.is_a?(Hash) && saved_request.key?(:error))
+            LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:saved_request[:error])
+            halt_with_code_body(404, {error: saved_request[:error]}.to_json) 
+          end
+          LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:saved_request.to_json, status: '201')
+          halt_with_code_body(201, saved_request.to_json)
+        rescue JSON::ParserError => e
+          LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error parsing params #{params}")
+          halt_with_code_body(400, {error: "Error parsing params #{params}"}.to_json)
+        end
+      end
     end
     LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"body=#{body}")
     
@@ -108,36 +130,7 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
       halt_with_code_body(400, {error: "Error parsing params #{params}"}.to_json)
     end
   end
-  
-  post '/tests/?' do
-    msg='.'+__method__.to_s
-    # …/api/v3/tests/plans/tests?confirm_required=true&test_uuid=526bb462-736f-44ff-9ca3-ee393ca71567
-    # .../api/v1/test-plans/tests
-    
-    if (params.fetch(:confirm_required).empty? || params.fetch(:test_uuid).empty?)
-      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:ERROR_MISSING_PARAMS, status: '400')
-      halt_with_code_body(400, ERROR_MISSING_PARAMS.to_json) 
-    end
-    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
-    
-    begin
-      saved_request = CreateTestPlansService.call_with_params(params)
-      if saved_request.nil? 
-        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error creating the test plan")
-        halt_with_code_body(400, {error: "Error creating the test plan"}.to_json) 
-      end
-      if (saved_request && saved_request.is_a?(Hash) && saved_request.key?(:error))
-        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:saved_request[:error])
-        halt_with_code_body(404, {error: saved_request[:error]}.to_json) 
-      end
-      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:saved_request.to_json, status: '201')
-      halt_with_code_body(201, saved_request.to_json)
-    rescue JSON::ParserError => e
-      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error parsing params #{params}")
-      halt_with_code_body(400, {error: "Error parsing params #{params}"}.to_json)
-    end
-  end
-    
+      
   private
   def uuid_valid?(uuid)
     return true if (uuid =~ /[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}/) == 0
