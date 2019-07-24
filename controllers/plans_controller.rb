@@ -45,6 +45,8 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
      \tservice_uuid: the UUID of the service to be tested
      \ttest_uuid: the UUID of the test to be executed
   eos
+  ERROR_MISSING_PARAMS = "Both 'confirmation_required' and 'test_uuid' must be present as query parameters"
+  
   get '/?' do 
     msg='.'+__method__.to_s+' (many)'
     LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
@@ -91,6 +93,35 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
         halt_with_code_body(400, {error: "Parameters #{params} are not valid"}.to_json) 
       end
       saved_request = CreateTestPlansService.call(params)
+      if saved_request.nil? 
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error creating the test plan")
+        halt_with_code_body(400, {error: "Error creating the test plan"}.to_json) 
+      end
+      if (saved_request && saved_request.is_a?(Hash) && saved_request.key?(:error))
+        LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:saved_request[:error])
+        halt_with_code_body(404, {error: saved_request[:error]}.to_json) 
+      end
+      LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:saved_request.to_json, status: '201')
+      halt_with_code_body(201, saved_request.to_json)
+    rescue JSON::ParserError => e
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error parsing params #{params}")
+      halt_with_code_body(400, {error: "Error parsing params #{params}"}.to_json)
+    end
+  end
+  
+  post '/tests/?' do
+    msg='.'+__method__.to_s
+    # …/api/v3/tests/plans/tests?confirm_required=true&test_uuid=526bb462-736f-44ff-9ca3-ee393ca71567
+    # .../api/v1/test-plans/tests
+    
+    if (params.fetch(:confirm_required).empty? || params.fetch(:test_uuid).empty?)
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:ERROR_MISSING_PARAMS, status: '400')
+      halt_with_code_body(400, ERROR_MISSING_PARAMS.to_json) 
+    end
+    LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
+    
+    begin
+      saved_request = CreateTestPlansService.call_with_params(params)
       if saved_request.nil? 
         LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error creating the test plan")
         halt_with_code_body(400, {error: "Error creating the test plan"}.to_json) 
