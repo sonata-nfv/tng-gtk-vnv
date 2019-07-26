@@ -39,8 +39,6 @@ require 'tng/gtk/utils/fetch'
 class FetchTestExecutionCountService < Tng::Gtk::Utils::Fetch
   LOGGER=Tng::Gtk::Utils::Logger
   LOGGED_COMPONENT=self.name
-  @@began_at = Time.now.utc
-  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'START', message:"Started at #{@@began_at}")
   NO_REPOSITORY_URL_DEFINED_ERROR='The REPOSITORY_URL ENV variable needs to be defined and pointing to the Repository where to fetch test results'
   REPOSITORY_URL = ENV.fetch('REPOSITORY_URL', '')
   if REPOSITORY_URL == ''
@@ -50,5 +48,37 @@ class FetchTestExecutionCountService < Tng::Gtk::Utils::Fetch
   # /trr/test-suite-results/counter/:test_uuid
   self.site=REPOSITORY_URL+'/trr/test-suite-results/count'
   LOGGER.debug(component:LOGGED_COMPONENT, operation:'initializing', message: "self.site=#{self.site}")
-  LOGGER.info(component:LOGGED_COMPONENT, operation:'initializing', start_stop: 'STOP', message:"Ending at #{Time.now.utc}", time_elapsed: Time.now.utc - @@began_at)
+  
+  def self.call(params)
+    msg='.'+__method__.to_s
+    original_params = params.dup
+    begin
+      if params.key?(:uuid)
+        uuid = params.delete :uuid
+        uri = URI.parse("#{self.site}/#{uuid}")
+        # mind that there cany be more params, so we might need to pass params as well
+      else
+        uri = URI.parse(self.site)
+        uri.query = URI.encode_www_form(sanitize(params))
+      end
+      request = Net::HTTP::Get.new(uri)
+      request['content-type'] = 'application/json'
+      response = Net::HTTP.start(uri.hostname, uri.port) {|http| http.request(request)}
+      case response
+      when Net::HTTPSuccess
+        body = response.read_body
+        result = JSON.parse(body, quirks_mode: true, symbolize_names: true)
+        return result
+      when Net::HTTPNotFound
+        return {} unless uuid.nil?
+        return []
+      else
+         LOGGER.error(start_stop: 'STOP', component:self.name, operation:msg, message:"#{response.message}", status:'404')
+        return nil
+      end
+    rescue Exception => e
+    end
+    nil
+  end
+  
 end

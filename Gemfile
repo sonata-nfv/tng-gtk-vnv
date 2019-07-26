@@ -50,6 +50,7 @@ gem 'tng-gtk-utils', '0.5.1'
 
 group :test do
   gem 'webmock', '3.1.1'
-  gem 'rspec', '3.7.0'
-  gem 'rack-test', '0.8.2'
+  gem 'rspec', '3.8.0'
+  gem 'rack-test', '1.1.0'
+  gem 'airborne', '0.3.4'
 end
