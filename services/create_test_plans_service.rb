@@ -44,7 +44,7 @@ class CreateTestPlansService
     LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: NO_PLANNER_URL_DEFINED_ERROR)
     raise ArgumentError.new(NO_PLANNER_URL_DEFINED_ERROR) 
   end
-  @@site=PLANNER_URL+'/test-plans'
+  @@site=PLANNER_URL #+'/test-plans'
   LOGGER.error(component:LOGGED_COMPONENT, operation:'initializing', message: "@@site=#{@@site}")
   
   # POST /api/v1/schedulers/services, with body {"test_uuid": “0101”}
