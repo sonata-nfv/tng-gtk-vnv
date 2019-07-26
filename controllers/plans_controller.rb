@@ -135,7 +135,7 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
     msg='.'+__method__.to_s
     LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
 
-    if params.fetch(:status, '').empty?
+    if params.fetch('status', '').empty?
       error = 'Status has to be provided as a query parameter'
       LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:error, status: '400')
       halt_with_code_body(400, error.to_json) 
