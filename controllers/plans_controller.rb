@@ -145,7 +145,7 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
       halt_with_code_body(400, error.to_json) 
     end
   
-    to_be_updated_request = FetchTestPlansService.update(params)
+    to_be_updated_request = CreateTestPlansService.update(params)
     unless to_be_updated_request 
       LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error finding test plan '#{params['plan_uuid']}'")
       halt_with_code_body(400, {error: "Error finding test plan '#{params['plan_uuid']}'"}.to_json) 
