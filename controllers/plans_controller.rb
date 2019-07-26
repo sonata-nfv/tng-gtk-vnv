@@ -155,7 +155,7 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
       halt_with_code_body(404, {error: to_be_updated_request[:error]}.to_json) 
     end
     LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:to_be_updated_request.to_json, status: '201')
-    halt_with_code_body(201, to_be_updated_request.to_json)
+    halt_with_code_body(200, to_be_updated_request.to_json)
   end
   
     
