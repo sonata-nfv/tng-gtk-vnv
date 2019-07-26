@@ -118,9 +118,8 @@ class CreateTestPlansService
 
     # Create the HTTP objects
     http = Net::HTTP.new(uri.host, uri.port)
-    #request = Net::HTTP::Put.new(uri.path.concat("?status=#{params['status']}"))
-    request = Net::HTTP::Put.new(uri, {'Content-Type': 'text/json'})
-    STDERR.puts ">>>>> uri=#{uri.inspect} #{uri.path.concat("?status=#{params['status']}")}"
+    request = Net::HTTP::Put.new(uri.path.concat("?status=#{params['status']}"))
+    STDERR.puts ">>>>> uri=#{uri.inspect}"
     request['Content-Type'] = 'application/json'
 
     # Send the request
