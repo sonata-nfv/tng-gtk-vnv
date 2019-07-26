@@ -118,7 +118,8 @@ class CreateTestPlansService
 
     # Create the HTTP objects
     http = Net::HTTP.new(uri.host, uri.port)
-    request = Net::HTTP::Put.new(uri.path.concat("?status=#{params['status']}"))
+    #request = Net::HTTP::Put.new(uri.path.concat("?status=#{params['status']}"))
+    request = Net::HTTP::Put.new(uri, {'Content-Type': 'text/json'})
     STDERR.puts ">>>>> uri=#{uri.inspect} #{uri.path.concat("?status=#{params['status']}")}"
     request['Content-Type'] = 'application/json'
 
@@ -126,9 +127,11 @@ class CreateTestPlansService
     begin
       response = http.request(request)
       LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "response=#{response}")
+      STDERR.puts ">>>>>>> response=#{response}"
       case response
       when Net::HTTPSuccess, Net::HTTPCreated
         body = response.body
+        STDERR.puts ">>>>>>> response body=#{body}"
         LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "#{response.code} body=#{body}")
         return JSON.parse(body, quirks_mode: true, symbolize_names: true)
       else
