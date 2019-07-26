@@ -119,6 +119,7 @@ class CreateTestPlansService
     # Create the HTTP objects
     http = Net::HTTP.new(uri.host, uri.port)
     request = Net::HTTP::Put.new(uri.path.concat("?status=#{params['status']}"))
+    STDERR.puts ">>>>> uri=#{uri.inspect} #{uri.path.concat("?status=#{params['status']}")}"
     request['Content-Type'] = 'application/json'
 
     # Send the request
@@ -136,7 +137,6 @@ class CreateTestPlansService
       end
     rescue Exception => e
       LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message: e.message)
-      STDERR.puts "%s - %s: %s" % [Time.now.utc.to_s, msg, ]
     end
     nil
   end
