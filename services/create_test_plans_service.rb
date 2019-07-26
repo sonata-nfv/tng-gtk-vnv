@@ -132,7 +132,8 @@ class CreateTestPlansService
         body = response.body
         STDERR.puts ">>>>>>> response body=#{body}"
         LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message: "#{response.code} body=#{body}")
-        return JSON.parse(body, quirks_mode: true, symbolize_names: true)
+        return JSON.parse(body, quirks_mode: true, symbolize_names: true) unless body.empty?
+        return params
       else
         LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message: "#{response.message}")
         return {error: "#{response.message}"}
