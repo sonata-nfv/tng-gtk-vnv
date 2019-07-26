@@ -134,6 +134,10 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
   put '/:plan_uuid/?' do 
     msg='.'+__method__.to_s
     LOGGER.debug(component:LOGGED_COMPONENT, operation:msg, message:"params=#{params}")
+    unless uuid_valid?(params['plan_uuid'])
+      LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"UUID '#{params['plan_uuid']} not valid", status: '400')
+      halt_with_code_body(400, "UUID '#{params['plan_uuid']} not valid") 
+    end
 
     if params.fetch('status', '').empty?
       error = 'Status has to be provided as a query parameter'
@@ -141,7 +145,7 @@ class PlansController < Tng::Gtk::Utils::ApplicationController
       halt_with_code_body(400, error.to_json) 
     end
   
-    to_be_updated_request = FetchTestPlansService.call(params['plan_uuid'])
+    to_be_updated_request = FetchTestPlansService.call(uuid: params['plan_uuid'])
     unless to_be_updated_request 
       LOGGER.error(component:LOGGED_COMPONENT, operation:msg, message:"Error finding test plan '#{params['plan_uuid']}'")
       halt_with_code_body(400, {error: "Error finding test plan '#{params['plan_uuid']}'"}.to_json) 
