@@ -14,8 +14,8 @@ Supported endpoints, alphabetically sorted, are described next. These endpoints 
 
 **Endpoints**|**Description**
 :----|:----
-`/`|The root of the API.
-`/pings`|[The module's `readiness` and `liveness` endpoint](https://github.com/sonata-nfv/tng-api-gtw/wiki/readiness-liveliness-probe)
+`/`|[The root of the API](https://github.com/sonata-nfv/tng-gtk-vnv/wiki/other-endpoints#root)
+`/pings`|[The module's `readiness` and `liveness` endpoint](https://github.com/sonata-nfv/tng-gtk-vnv/wiki/other-endpoints#pings)
 `/descriptors`|[Lists available test descriptors (TDs) in the Catalogue](https://github.com/sonata-nfv/tng-gtk-vnv/wiki/test-descriptors-queries)
 `/plans`|[Manages test plans](https://github.com/sonata-nfv/tng-vnv-planner)
 `/results`|[Lists available test results (TRs) in the Repository](https://github.com/sonata-nfv/tng-gtk-vnv/wiki/test-results-queries)
