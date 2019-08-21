@@ -9,6 +9,17 @@ Please see [details on the overall 5GTANGO architecture here](https://5gtango.eu
 
 <p align="center"><img src="https://github.com/sonata-nfv/tng-api-gtw/wiki/images/GKs_place_in_5GTANGO_architecture.png" /></p>
 
+## Supported endpoints
+Supported endpoints, alphabetically sorted, are described next. These endpoints are internal, only the ones exposed by the [router](https://github.com/sonata-nfv/tng-api-gtw/blob/master/tng-router) in the [Service Platform's](https://github.com/sonata-nfv/tng-api-gtw/blob/master/tng-router/config/sp_routes.yml) and [V&V Platform's](https://github.com/sonata-nfv/tng-api-gtw/blob/master/tng-router/config/vnv_routes.yml) routing files are available from the outside.
+
+**Endpoints**|**Description**
+:----|:----
+`/`|The root of the API.
+`/pings`|[The Gatekeeper's `readiness` and `liveness` endpoint](https://github.com/sonata-nfv/tng-api-gtw/wiki/readiness-liveliness-probe)
+`/descriptors`|[Lists available test descriptors (TDs) in the Catalogue](https://github.com/sonata-nfv/tng-gtk-vnv/wiki/test-descriptors-queries)
+`/plans`|[Manages test plans](https://github.com/sonata-nfv/tng-vnv-planner)
+`/results`|[Lists available test results (TRs) in the Repository](https://github.com/sonata-nfv/tng-gtk-vnv/wiki/test-results-queries)
+
 ## Installing / Getting started
 
 This component is implemented in [ruby](https://www.ruby-lang.org/en/), version **2.4.3**. 
