@@ -34,13 +34,13 @@ source 'https://rubygems.org'
 ruby '2.4.3'
 
 gem 'rake', '12.3.0'
-gem 'rack', '2.0.6'
+gem 'rack', '2.0.8'
 gem 'sinatra', '2.0.2', require: 'sinatra/base'
 gem 'sinatra-contrib', '2.0.2', require: false
 gem 'sinatra-cross_origin', '0.4.0'
 gem 'redis', '4.0.3'
 
-gem 'puma', '3.11.0'
+gem 'puma', '3.12.2'
 
 gem 'ci_reporter_rspec', '1.0.0'
 gem 'rubocop', '0.52.0'
